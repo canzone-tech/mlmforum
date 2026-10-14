@@ -9,7 +9,7 @@ test("login is server-authenticated, user role comes from database",async({page}
  await page.getByRole("button",{name:"Login →"}).click();
  await expect(page).toHaveURL(/\/dashboard$/);
  await expect(page.getByRole("heading",{name:"Welcome, Test Member"})).toBeVisible();
- await expect(page.getByText("MEMBER",{exact:false})).toBeVisible();
+ await expect(page.getByText("Signed in. Your authorized role: MEMBER",{exact:true})).toBeVisible();
  await page.getByRole("button",{name:"Logout"}).click();
  await expect(page).toHaveURL(/\/login$/);
  await page.goto("/dashboard");
