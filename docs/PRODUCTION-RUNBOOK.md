@@ -1,7 +1,7 @@
-# Production runbook — UNAPPROVED / NOT DEPLOYED
+# Production runbook — NOT YET DEPLOYABLE
 
-Production infrastructure, real auth, backups/isolated restore, immutable artifact promotion, scoped rollback, external TLS smoke and operator sign-off are **not** implemented in the first visual prototype module. Do not run migrations, payments or deployments.
+MLM Forum is a real-product implementation. A visually working frontend is NOT production authentication.
 
-Target stack when approved: Ubuntu 24.04, Apache TLS, dedicated non-root PM2 per project; compiled source-free checksum-verified artifacts; separate approved migrations; encrypted off-host backup and verified isolated restore; project-only rollback.
+Production requires approved Node 24/NestJS, MySQL schema, real sponsor lookup, password provisioning, mobile OTP and account activation, server-side RBAC, operational secrets and rate limiting. All routes including dashboard need real session enforcement. This module's backend does not yet exist.
 
-**Do not deploy this phase as a real membership system.** It is a role-login **demo preview** only.
+Before deployment: exact-SHA CI and local verification, explicit approval, independent off-host encrypted backup/restore evidence, artifact checksums, dedicated non-root PM2 account, scoped Apache TLS proxy, atomic switch, rollback, external HTTPS and auth 401 checks, visual UAT. Do not deploy this incomplete implementation.

@@ -16,6 +16,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .btn-primary{color:#fff;background:linear-gradient(110deg,#123f82,#071b49);box-shadow:0 5px 15px #ed16851c}
 .btn-outline{color:var(--pink);border-color:#9bb7df;background:#fff}
 .btn-block{width:100%;margin-top:8px}
+.btn:disabled{opacity:.6;cursor:wait}
 .eyebrow{color:var(--pink);font-size:10px;letter-spacing:1.6px;font-weight:800}
 .muted{color:var(--muted)}
 .auth-page{background:linear-gradient(135deg,#f5f2ff,#fff7fb);min-height:100vh}
@@ -37,12 +38,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .auth-card input:invalid:not(:placeholder-shown){border-color:var(--pink)}
 .sponsor-error{color:var(--pink)}.sponsor-success{color:var(--green)}
 .form-msg{font-size:11px;color:var(--pink);min-height:16px;line-height:1.6}
-.demo-accounts{border-top:1px solid var(--line);padding-top:15px;margin-top:18px}
-.demo-accounts h3{font-size:13px}
-.demo-accounts p,.demo-accounts>small{font-size:10px;color:var(--muted)}
-.credential-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:10px 0}
-.credential-grid button{border:1px solid var(--line);background:#fbfbff;border-radius:8px;padding:9px;text-align:left;font-size:10px;font-weight:800;color:var(--navy);cursor:pointer}
-.credential-grid small{font-size:9px;color:var(--muted);font-weight:400;overflow-wrap:anywhere}
 .portal-placeholder{max-width:750px;margin:60px auto;padding:30px;background:#fff;border:1px solid var(--line);border-radius:18px}
 .portal-placeholder h1{color:var(--navy);font-size:30px}
 .portal-placeholder p{line-height:1.8;color:var(--muted)}
@@ -58,8 +53,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
   .auth-art img{height:145px}
   .auth-card{padding:18px;margin-top:16px}
   .auth-tabs .tab{padding:12px 10px}
-  .demo-accounts{margin-top:22px}
-  .credential-grid{grid-template-columns:1fr 1fr}
-  .portal-placeholder{margin:20px 12px;padding:20px}
+      .portal-placeholder{margin:20px 12px;padding:20px}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}

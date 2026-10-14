@@ -1,10 +1,9 @@
-# Release sign-off
+# Release signoff — PENDING
 
-- Source: client-provided prototype `login.html`, `styles.css`, `app.js`.
-- Status: development only.
-- Backend implementation: NOT STARTED.
-- Real authentication / registration / payments: NOT ENABLED.
-- CI Backend / Frontend / Release Evidence: check exact current commit in Actions.
-- Local gate: user must run `git pull` then `npm run verify` after three CI gates pass.
-- Production approval: **PENDING**; no deployment authorization.
-- Browser visual UAT: **PENDING** until tested against client screenshots.
+- Client source: `login.html`, `app.js`, `styles.css` (design and field reference).
+- Product intent: **real operational MLM Community Forum**, not a sample-login application.
+- Current milestone: real-flow frontend shell; server authentication/register/sponsor integration still NOT IMPLEMENTED.
+- Backend CI status is scope-only and **not** auth/RBAC/database test evidence.
+- Frontend build/runtime/browser status must be checked on the exact release SHA.
+- Local `npm run verify`: unconfirmed unless operator runs it successfully.
+- Production approval: PENDING. **Do not deploy** until real backend, provider verification, recovery, UAT and explicit signoff.

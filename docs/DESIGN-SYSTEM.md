@@ -1,14 +1,13 @@
-# Design system (client reference)
+# Design system: client-source-aligned
 
-Source of truth: client's `styles.css` and module screenshots, not generic redesign.
-The first converted module is `login.html`.
+Source references are the client's `styles.css`, `login.html` and module-specific screenshots; the target is the real MLM Community Forum.
 
 - **Tokens:** navy `#071b49`, blue `#123f82`, pink `#d84b91`, muted `#68758d`, borders `#dfe6f1`.
-- **Layout:** 1100px max auth container, two balanced columns on desktop; vertical layout at 620px and below.
-- **Elements:** original brand mark, tab styling, demo role selector, credential grid, focus-visible outline.
-- **Typography:** Inter/Arial fallback; preserve original label and helper-text hierarchy.
-- **States:** native required/form validation, live sponsor feedback, demo-only confirmation/error text.
-- **Assets:** use the original source teamwork image URL; remote availability can vary.
-- **Accessibility:** tab roles and selected state, associated labels, live messages, keyboard focus, no horizontal overflow.
+- **Layout:** 1100px max authentication container, balanced desktop columns, stacked under 620px.
+- **Reusable visuals:** client logo/wordmark, login/register tabs, labeled fields, sponsor name read-only control, keyboard focus and accessible feedback.
+- **States:** native input constraints plus API errors, pending submits, sponsor verification and account verification status.
+- **Authentication:** role dropdown and preset credentials are **not** part of the real login UI. Roles must be server-authorized; sponsor records must be resolved from the MySQL-backed API.
+- **Image:** the client reference uses an external Unsplash photo. Replace with approved licensed asset before release.
+- **Testing:** compare responsive screenshots for each implementation module; browser interaction tests are separate from full production UAT.
 
-Do not import the entire original stylesheet into global Next CSS: its unrelated page rules would introduce accidental cross-module coupling. Port only the classes required by each approved module and preserve the source design.
+Keep styles module-focused. Do not import the entire prototype stylesheet or implement unstarted modules.

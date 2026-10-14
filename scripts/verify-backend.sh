@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
-# Backend is explicitly out of scope until real auth/workflow policy is approved.
-# Never claim this is API, database, or RBAC test evidence.
+# Backend remains missing: scope check MUST NOT claim real authentication or API verification.
 test -f AGENTS.md
 test -f docs/BUSINESS-RULES-REGISTER.md
-test -f config/demo.ts
+test -f config/auth.ts
 if [[ -d apps/api ]]; then
-  echo "Backend module now exists: update this gate to run its real verification." >&2
+  echo "Backend exists: add real NestJS/MySQL verification before claiming this gate." >&2
   exit 1
 fi
-echo "Backend scope gate passed: API NOT IMPLEMENTED; no auth, MySQL or financial processing enabled."
+echo "Backend scope gate only: NestJS, MySQL, OTP and authentication NOT IMPLEMENTED."

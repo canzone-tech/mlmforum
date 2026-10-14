@@ -1,33 +1,24 @@
 # MLM Community Forum
 
-Independent client-source-aligned Next.js/TypeScript project, developed only on `dev/local-foundation`.
+A real multi-role community platform under development. The client's HTML/CSS/JS is the source for screens and requested workflows, **not** authentication code, a development data source or permission policy.
 
-## Current module — Login / Register (demo-only)
+## Login / Register milestone
 
-The supplied client `login.html`, `app.js`, `styles.css` and accompanying registration/mobile audit are the reference. The frontend contains a responsive login/register form, seven selectable preview identities, ten read-only sample sponsor IDs and browser validation. **No secure authentication, persisted signup, OTP, role authorization, financial transaction or MLM payout exists.**
+Next.js + TypeScript renders client-aligned responsive login and registration forms. Seven client roles are **not** selectable at login: authenticated identity and permitted roles must come exclusively from the future NestJS/MySQL backend. Self-registration account-type options are limited to the five non-privileged roles in `config/auth.ts` pending owner approval.
 
-The route `/demo?role=...` is only a visibly labeled placeholder for the future dashboard conversion. It is not private or authenticated.
+The frontend sends login/register/sponsor requests to `NEXT_PUBLIC_API_BASE_URL` (default `/api`). These backend endpoints are **not implemented yet**; requests fail closed and display an unavailable/verification message. **No user is authenticated or registered until the real backend exists and passes UAT.**
 
-Demo reference data is held in **one** `config/demo.ts` module, never in real datastore tables.
+## Verification
 
-## Setup and verification
-
-Use Node.js 24. The committed `package-lock.json` keeps installs reproducible. From repo root, after exact-SHA CI gates pass:
+Node.js 24 required. After exact-SHA Backend CI, Frontend CI and Release Evidence are green, run from repo root:
 
 ```sh
 git pull
 npm run verify
 ```
 
-This runs a locked install, scope checks, lint, typecheck, tests, production build, compiled standalone startup/HTTP route smoke and Playwright Chromium browser UAT. It may download Chromium on first run. Do not claim local PASS until the operator confirms.
+This performs a deterministic npm install, lint/types, source/validation tests, Next production build, compiled server/CSS/JS startup, browser form interactions and mobile overflow checks.
 
-For dev preview after install, run `npm run dev`; browse `http://localhost:3000/login`.
+**Current scope:** backend CI is explicitly scope-only; it does not claim authentication, DB, RBAC or provider verification. Production authorization remains pending.
 
-## CI and release state
-
-- Backend CI: explicit scope check; **backend not implemented**.
-- Frontend CI: locked install, build/runtime/browser tests.
-- Release Evidence: checks Backend + Frontend workflow conclusions on the **same SHA**, saves JSON evidence, and keeps production approval **PENDING**.
-- No production deployment approval or real financial behavior is inferred.
-
-See `AGENTS.md`, `docs/DEVELOPMENT-DELIVERY-RULES.md`, `docs/BUSINESS-RULES-REGISTER.md`, and `docs/UAT-CHECKLIST.md`.
+See `AGENTS.md`, `docs/UAT-CHECKLIST.md`, `docs/BUSINESS-RULES-REGISTER.md`, and `docs/RELEASE-SIGNOFF.md`.
