@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+enum UserStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+}
+enum Role {
+  MEMBER
+  BUSINESS
+  EXPERT
+  ORGANIZER
+  ADVERTISER
+  MODERATOR
+  ADMIN
+}
+enum RegistrationStatus {
+  PENDING_VERIFICATION
+  REJECTED
+  APPROVED
+}
+model User {
+  id              String    @id @default(uuid()) @db.Char(36)
+  memberCode      String    @unique @db.VarChar(30)
+  name            String    @db.VarChar(100)
+  email           String    @unique @db.VarChar(160)
+  mobile          String    @unique @db.VarChar(10)
+  passwordHash    String?   @db.VarChar(255)
+  status          UserStatus @default(PENDING)
+  mobileVerifiedAt DateTime? @db.DateTime(3)
+  emailVerifiedAt  DateTime? @db.DateTime(3)
+  createdAt       DateTime  @default(now()) @db.DateTime(3)
+  updatedAt       DateTime  @updatedAt @db.DateTime(3)
+  roles           UserRole[]
+  sessions        Session[]
+  sponsored       RegistrationRequest[] @relation("SponsorRequests")
+}
+model UserRole {
+  id        String   @id @default(uuid()) @db.Char(36)
+  userId    String   @db.Char(36)
+  role      Role
+  user      User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+  @@unique([userId, role])
+}
+model Session {
+  id               String   @id @default(uuid()) @db.Char(36)
+  userId           String   @db.Char(36)
+  refreshHash      String   @db.VarChar(255)
+  createdAt        DateTime @default(now()) @db.DateTime(3)
+  expiresAt        DateTime @db.DateTime(3)
+  revokedAt        DateTime? @db.DateTime(3)
+  user             User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+  @@index([userId, revokedAt])
+}
+model RegistrationRequest {
+  id                String             @id @default(uuid()) @db.Char(36)
+  fullName          String             @db.VarChar(100)
+  email             String             @unique @db.VarChar(160)
+  mobile            String             @unique @db.VarChar(10)
+  sponsorId         String             @db.Char(36)
+  requestedRole     Role
+  interest          String             @db.VarChar(100)
+  consentVersion    String             @db.VarChar(60)
+  consentRecordedAt DateTime           @default(now()) @db.DateTime(3)
+  status            RegistrationStatus @default(PENDING_VERIFICATION)
+  createdAt         DateTime           @default(now()) @db.DateTime(3)
+  sponsor           User               @relation("SponsorRequests",fields:[sponsorId],references:[id],onDelete:Restrict)
+  @@index([sponsorId, status])
+}

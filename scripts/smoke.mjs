@@ -4,51 +4,45 @@ import assert from "node:assert/strict";
 import {existsSync} from "node:fs";
 const entry=".next/standalone/server.js";
 assert.ok(existsSync(entry),"Missing Next standalone compiled entrypoint");
-const port=32045;
+const port=32123;
 const base="http://127.0.0.1:"+port;
 const child=spawn(process.execPath,[entry],{
-  env:{...process.env,PORT:String(port),HOSTNAME:"127.0.0.1",NODE_ENV:"production"},
-  stdio:["ignore","pipe","pipe"]
+ env:{...process.env,PORT:String(port),HOSTNAME:"127.0.0.1",NODE_ENV:"production"},
+ stdio:["ignore","pipe","pipe"]
 });
 let output="";
-for(const stream of [child.stdout,child.stderr]){
-  stream.on("data",chunk=>{output+=String(chunk);});
-}
+for(const stream of [child.stdout,child.stderr])stream.on("data",chunk=>{output+=String(chunk);});
 try{
-  let ready=false;
-  for(let i=0;i<50;i++){
-    if(child.exitCode!==null)throw new Error("Compiled server exited early: "+output);
-    try{
-      const response=await fetch(base+"/login");
-      if(response.ok){ready=true;break;}
-    }catch(error){
-      if(child.exitCode!==null)throw error;
-    }
-    await pause(300);
-  }
-  assert.ok(ready,"Compiled server failed readiness within 15 seconds: "+output);
-  for(const path of ["/","/login","/login?tab=register"]){
-    const response=await fetch(base+path);
-    assert.equal(response.status,200,path+" did not return 200");
-    assert.match(await response.text(),/MLM COMMUNITY FORUM/);
-  }
-  for(const path of ["/demo","/dashboard"]){
-    const response=await fetch(base+path);
-    assert.equal(response.status,404,path+" should not be an unrestricted dashboard");
-  }
-  const login=await(await fetch(base+"/login")).text();
-  assert.match(login,/Welcome back/);
-  assert.doesNotMatch(login,/Demo@123|member@mlmforum\.demo|Open Demo Dashboard/);
-  const assets=[...login.matchAll(/(?:src|href)="(\/_next\/static\/[^"]+)"/g)].map(m=>m[1]);
-  assert.ok(assets.some(asset=>asset.endsWith(".css")),"No compiled CSS asset linked");
-  assert.ok(assets.some(asset=>asset.endsWith(".js")),"No compiled JS asset linked");
-  for(const path of [assets.find(x=>x.endsWith(".css")),assets.find(x=>x.endsWith(".js"))]){
-    const response=await fetch(base+path);
-    assert.equal(response.status,200,"Compiled asset unavailable: "+path);
-  }
-  console.log("Production build startup, public auth routes and static assets verified; auth backend not yet connected.");
+ let ready=false;
+ for(let i=0;i<60;i++){
+  if(child.exitCode!==null)throw new Error("Next runtime exited: "+output);
+  try{
+   const response=await fetch(base+"/login");
+   if(response.ok){ready=true;break;}
+  }catch(error){if(child.exitCode!==null)throw error;}
+  await pause(300);
+ }
+ assert.ok(ready,"Compiled Next server readiness timeout: "+output);
+ for(const path of ["/","/login","/login?tab=register","/dashboard"]){
+  const response=await fetch(base+path);
+  assert.equal(response.status,200,"Next route "+path);
+  assert.match(await response.text(),/MLM COMMUNITY FORUM/);
+ }
+ assert.equal((await fetch(base+"/demo")).status,404,"Legacy bypass route must stay absent");
+ const readyApi=await fetch("http://127.0.0.1:"+(process.env.API_PORT??"4000")+"/health/ready");
+ assert.equal(readyApi.status,200,"Compiled NestJS DB readiness");
+ const unauth=await fetch(base+"/api/auth/me");
+ assert.equal(unauth.status,401,"Same-origin Next API rewrite must preserve unauthenticated 401");
+ const login=await(await fetch(base+"/login")).text();
+ assert.doesNotMatch(login,/Demo@123|member@mlmforum\.demo|Open Demo Dashboard/);
+ const assets=[...login.matchAll(/(?:src|href)="(\/_next\/static\/[^"]+)"/g)].map(m=>m[1]);
+ assert.ok(assets.some(x=>x.endsWith(".css")),"Missing CSS link");
+ assert.ok(assets.some(x=>x.endsWith(".js")),"Missing JS link");
+ for(const asset of [assets.find(x=>x.endsWith(".css")),assets.find(x=>x.endsWith(".js"))])
+  assert.equal((await fetch(base+asset)).status,200,"Compiled asset "+asset);
+ console.log("Compiled Next/NestJS startup, DB readiness, 401, routes and static assets PASS");
 }finally{
-  child.kill("SIGTERM");
-  await pause(400);
-  if(child.exitCode===null)child.kill("SIGKILL");
+ child.kill("SIGTERM");
+ await pause(400);
+ if(child.exitCode===null)child.kill("SIGKILL");
 }

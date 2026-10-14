@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 18
     steps:
-      - name: Confirm Backend and Frontend CI on exact commit SHA
+      - name: Require genuine Backend CI and integrated Frontend CI on exact SHA
         env:
           GH_TOKEN: ${{ github.token }}
           SHA: ${{ github.sha }}
@@ -19,28 +19,26 @@ jobs:
           get_state() {
             gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/$1/runs?head_sha=${SHA}&branch=dev%2Flocal-foundation&per_page=30" --jq '.workflow_runs | sort_by(.run_number) | last | .conclusion // "pending"'
           }
-          backend="pending"; frontend="pending"
+          backend=pending; frontend=pending
           for attempt in $(seq 1 45); do
             backend="$(get_state backend-ci.yml)"
             frontend="$(get_state frontend-ci.yml)"
             echo "SHA ${SHA}: backend=${backend}, frontend=${frontend}"
             if [[ "$backend" == "success" && "$frontend" == "success" ]]; then break; fi
             if [[ "$backend" == "failure" || "$frontend" == "failure" || "$backend" == "cancelled" || "$frontend" == "cancelled" ]]; then
-              echo "A same-SHA CI run failed or was cancelled" >&2
+              echo "Exact-SHA checks failed" >&2
               exit 1
             fi
             sleep 20
           done
-          if [[ "$backend" != "success" || "$frontend" != "success" ]]; then
-            echo "Timed out waiting for both exact-SHA CI workflows" >&2
-            exit 1
-          fi
+          [[ "$backend" == "success" && "$frontend" == "success" ]] || { echo "Timed out waiting for exact SHA" >&2; exit 1; }
           jq -n --arg sha "$SHA" --arg repo "$GITHUB_REPOSITORY" '{
-            release_sha: $sha, repository: $repo, branch: "dev/local-foundation",
-            backend_ci: "success (scope-only; API not implemented)",
-            frontend_ci: "success (Next build, compiled runtime and browser tests)",
-            release_evidence: "success", production_approval: "PENDING",
-            local_verification: "NOT CONFIRMED", production_deployment: "NOT DEPLOYED"
+            release_sha:$sha,repository:$repo,branch:"dev/local-foundation",
+            backend_ci:"success (compiled NestJS+MySQL integration)",
+            frontend_ci:"success (root npm run verify, including DB/API/browser)",
+            production_approval:"PENDING",
+            account_activation:"BLOCKED until OTP/provider/policy approval",
+            local_verification:"NOT CONFIRMED",production_deployment:"NOT DEPLOYED"
           }' > release-evidence.json
           cat release-evidence.json
       - uses: actions/upload-artifact@v4

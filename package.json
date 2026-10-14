@@ -1,10 +1,13 @@
 {
   "name": "mlmforum",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "engines": {
     "node": ">=24 <25"
   },
+  "workspaces": [
+    "apps/api"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -16,7 +19,11 @@
     "verify": "bash scripts/verify.sh",
     "verify:backend": "bash scripts/verify-backend.sh",
     "verify:frontend": "bash scripts/verify-frontend.sh",
-    "smoke": "node scripts/smoke.mjs"
+    "smoke": "node scripts/smoke.mjs",
+    "api:generate": "npm run db:generate -w @mlmforum/api",
+    "api:migrate": "npm run db:migrate -w @mlmforum/api",
+    "api:build": "npm run build -w @mlmforum/api",
+    "api:test": "npm run test:integration -w @mlmforum/api"
   },
   "dependencies": {
     "next": "15.5.9",

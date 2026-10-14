@@ -1,20 +1,18 @@
 # Development and delivery rules
 
-## Client-source-first, integrated module delivery
-Reference: supplied `MLM_Community_Forum_MULTIPAGE_COMMUNITY_DISCUSSION_BUNDLE.zip` (HTML/CSS/JS, role-based UI and workflow documents). Request screenshots **only for the current module** as needed.
+## Per-module implementation
+1. Inspect existing client HTML, JavaScript, CSS, requirements and the GitHub module; request screenshot when necessary.
+2. Separate approved business behavior from illustrative prototype data and unresolved provider/policy decisions.
+3. Implement the minimal **frontend + backend + database** vertical slice; no UI fake success, no speculative features.
+4. Test server validation, MySQL constraints and migrations, auth/RBAC/ownership and concurrency/idempotency where relevant.
+5. Compile both runtimes, boot them and verify API readiness, frontend routes, real browser actions and mobile widths.
+6. Run all checks from root `npm run verify` locally and in CI. CI Backend, Frontend and Release Evidence must pass on the same SHA.
+7. Commit only to `dev/local-foundation`; review diff and preserve unrelated work.
+8. **First-time local clone only after three CI gates green.** Subsequent updates: `git pull` then `npm run verify`.
+9. Production approval, financial behavior and OTP/vendor activation remain separate owner decisions.
 
-1. Choose one client-defined real module. Inspect its HTML, styles, JavaScript, requirements, fields, role permissions and current repository implementation.
-2. Identify what is confirmed, what is only visual example behavior and what requires owner approval. Do not invent compensation, eligibility, payments or provider requirements.
-3. Implement the **minimal coherent vertical slice**: Next.js interface + NestJS REST validation/auth/RBAC + MySQL/Prisma data model/transaction needs. No disconnected UI and no fake-success handlers.
-4. Keep roles, navigation and approved policies configuration-driven; reuse existing components and contracts rather than duplicate logic.
-5. For the same module, test database migration/schema, API success/failure paths, authorization/ownership, frontend user actions, responsive appearance and backend/frontend integration. Include regression tests in repo.
-6. Root `npm run verify` runs **both** sides and fails if a required side or its checks are absent. Backend CI, Frontend CI and Release Evidence must be green on the **same commit SHA** before local handoff. Scope-only Backend CI is not sufficient.
-7. Review final diff and push normally on `dev/local-foundation`, with no production changes.
-8. User currently has **no local clone**. After integrated CI is green, the initial handoff is a **single branch-specific git clone** plus `npm run verify` from the cloned repository root. Only later updates use `git pull` + `npm run verify`.
-9. Deploy only after separate exact-release approval and all production/recovery prerequisites.
+## Current identity slice
+A real MySQL-backed login/session/sponsor/pending-registration slice is under construction. A registration request cannot become an ACTIVE member without a separately approved mobile OTP + account provisioning workflow. Test-only accounts and secrets exist only in guarded isolated local integration fixtures, never production seed data.
 
-## Current status
-Previous Login/Register UI exists, but real NestJS/MySQL authentication, registration and sponsor verification are missing. Therefore **Login/Register is NOT complete**, and the joint backend gate must stay red until real API and integration tests are implemented. Existing client source examples are references, not a second app to reproduce.
-
-## Simplicity
-No advance engineering, unnecessary dependencies or duplicate module implementations. Do not pretend CI/local/deployment actions passed when they have not.
+## Security decisions still pending
+OTP provider and signup password enrollment; privacy/terms version and consent presentation; sponsor eligibility beyond verified active membership; approved role upgrade/approval flow; deployment/provisioning roles and privileged MFA.

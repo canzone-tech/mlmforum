@@ -1,9 +1,7 @@
-# Release sign-off — NOT READY
+# Release status — approval PENDING
 
-- Client-provided `login.html`, styles and JavaScript are requirements and visual references, not approved production auth.
-- MLM Forum is a **real** multi-role platform. Build each module's frontend + backend + persistence together.
-- Current Login/Register: **INCOMPLETE**. Next.js form exists; NestJS/MySQL/authentication/sponsor workflows do not.
-- **Backend CI must fail** while backend/integration testing is absent. Frontend CI alone does not satisfy a module or release gate. Release Evidence must not turn green unless real Backend CI and Frontend CI pass on one SHA.
-- Local: repository folder **not created by user**; local `npm run verify` has NOT run.
-- After full-stack three-gate green: first-time clone of approved branch then root `npm run verify`; subsequent `git pull` + `npm run verify`.
-- Production approval: PENDING. No deployment or financial operations.
+This milestone implements initial **real full-stack** account authentication, sponsor lookup and **pending** registration storage, with isolated test accounts only for CI.
+
+**Not production-ready:** OTP provider, password enrollment/activation, privacy policy approval, full dashboard and privileged role onboarding remain blocked. No live user activation or financial operations.
+
+Evidence must include three exact-SHA Github CI runs, integration/migration/compiled startup and real browser UAT. Local root `npm run verify` requires user confirmation. The user has no local clone yet. No production deployment authorized.

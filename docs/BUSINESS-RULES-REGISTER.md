@@ -1,15 +1,16 @@
-# Business rules register
+# MLM Forum business-rules register
 
-The product is a real MLM Community Forum. Client-supplied HTML/JS shows screen design and desired workflows but does NOT establish safe production authentication rules. Source: `APPROVED_RANK_AND_LEVEL_PLAN_RULES.md`, `LEVEL_PLAN_1_10_AND_CONTENT_REQUIREMENTS.md`, `MOBILE_NAV_AND_REGISTRATION_AUDIT.md`, `RBAC_PERMISSION_MATRIX.md`.
+Client source: `MOBILE_NAV_AND_REGISTRATION_AUDIT.md`, `RBAC_PERMISSION_MATRIX.md`, `APPROVED_RANK_AND_LEVEL_PLAN_RULES.md`, `README_ENGINEER_HANDOVER.md`.
 
-| Area | Source requirement | Production status |
+| Area | Source-derived baseline | Current state / approval |
 | --- | --- | --- |
-| Registration | Free signup; full name, email, Indian mobile, Sponsor ID and name, account type and interest | Frontend fields mapped; secure activation/OTP provider and password enrollment need approval |
-| Login | Email/password login | API integration missing; only server can authenticate and determine roles |
-| Roles | Member, Business Partner, Expert / Author, Event Organizer, Advertiser, Moderator, Administrator | Non-privileged applicants may request an account type; **never grant permissions from browser-submitted values**. Server-issued RBAC needed |
-| Sponsor | Level Plan 1:10, sponsor lookup and join verification | MySQL sponsor ID uniqueness, privacy-safe lookup, network limits and sponsor-change policy pending |
-| Rank | Source has 10 ranks and targets | Eligibility/effective dates pending approved decision |
-| Income and wallet | Source illustrates financial workflows | No commission or payout operations until approved ledger, provider UAT and recovery |
-| Community | Discussions, publishing, moderation and admin queues | Real persisted CRUD, abuse protection, permissions and audit pending |
+| Registration | Free; full name, email, Indian mobile, Sponsor ID + resolved sponsor name, account type, interest and consent | Store only a pending request; no activated account or commissions |
+| Member identity | Real server-side auth, Argon2, roles, sessions, OTP required before activation | Sessions for *existing pre-provisioned verified users* can be tested. OTP/password enrollment provider not selected |
+| Sponsor | Existing eligible sponsor resolved by member ID; Level Plan 1:10, not binary | Lookup requires ACTIVE + verified mobile, conservative minimal technical gate; final eligibility and referral policy needs owner approval |
+| Registration accounts | Member, Business, Expert, Organizer, Advertiser offered | `requestedRole` never confers permissions; admin/moderator never public signup options |
+| Rank | Ten rank names / targets from client, no income promise | Rank and active-member eligibility not enabled in this module |
+| Payments | No commission formula/payout rates approved | No wallet, ledger or payout implemented |
+| Privacy | Versioned consent and anti-abuse expected | Production consent text/version, retention and communication policy pending |
+| Mobile OTP | Provider verification before account activation | BLOCKED; no provider configured, no fabricated OTP success |
 
-No sample members, passwords, sponsor IDs, rates or balances may be used as real records. Owner approvals must be recorded here before enabling consequential behavior.
+Do not mistake an integration fixture or UI label for an approved production identity or business policy.

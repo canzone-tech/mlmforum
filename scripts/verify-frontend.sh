@@ -8,10 +8,15 @@ test -f .next/standalone/server.js
 mkdir -p .next/standalone/.next
 cp -R .next/static .next/standalone/.next/static
 if [[ -d public ]]; then cp -R public .next/standalone/public; fi
+node apps/api/test/fixtures.mjs create
+node apps/api/dist/main.js > /tmp/mlmforum-api-smoke.log 2>&1 &
+api_pid=$!
+cleanup() {
+  kill "$api_pid" 2>/dev/null || true
+  wait "$api_pid" 2>/dev/null || true
+  node apps/api/test/fixtures.mjs clean || true
+}
+trap cleanup EXIT
 npm run smoke
-if [[ "${SKIP_BROWSER_UAT:-}" == "1" ]]; then
-  echo "Browser UAT intentionally skipped (not an all-green full verify)." >&2
-else
-  npx playwright install chromium
-  npm run test:e2e
-fi
+npx playwright install chromium
+npm run test:e2e

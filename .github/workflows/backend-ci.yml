@@ -5,11 +5,41 @@ on:
   pull_request:
     branches: [dev/local-foundation]
 permissions:
-  contents: read
+  contents: write # only needed for one-time lockfile update on approved branch
 jobs:
   backend:
     runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - name: Require actual backend API/database/integration verification
-        run: bash scripts/verify-backend.sh
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: One-time reproducible workspace lock update
+        run: |
+          set -euo pipefail
+          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+          if ! git diff --quiet -- package-lock.json; then
+            if [[ "$GITHUB_EVENT_NAME" != "push" ]]; then
+              echo "Lockfile is stale. Update it on the development branch." >&2
+              exit 1
+            fi
+            git add package-lock.json
+            git -c user.email="41898282+github-actions[bot]@users.noreply.github.com" -c user.name="github-actions[bot]" commit -m "chore: lock backend workspace dependencies"
+            git push origin HEAD:dev/local-foundation
+            echo "New lockfile SHA requires fresh exact-SHA CI run." >&2
+            exit 1
+          fi
+      - name: Verify isolated NestJS/MySQL real integration
+        run: |
+          set -euo pipefail
+          set -a
+          source .env.example
+          set +a
+          docker compose up -d --wait mysql
+          npm ci --no-audit --no-fund
+          npm run verify:backend
+      - name: CI scope evidence
+        if: success()
+        run: echo "Compiled NestJS, Prisma migration, MySQL auth/sponsor/session integration PASS" >> "$GITHUB_STEP_SUMMARY"

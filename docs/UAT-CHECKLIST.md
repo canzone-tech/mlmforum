@@ -1,24 +1,23 @@
-# Login / Register acceptance checklist
+# Login and Registration UAT
 
-Client `login.html` is a design/field reference, NOT an acceptable authentication implementation.
+## Automated full-stack acceptance
+- [ ] Real compiled NestJS `/health/live`, `/health/ready` checks against MySQL
+- [ ] Prisma migration replay against isolated `mlmforum_test`
+- [ ] Existing verified user Argon2 login sets HttpOnly access/refresh cookies
+- [ ] Wrong credentials, suspended account, missing session and disallowed Origin denied
+- [ ] Server-provided roles only; admin privilege cannot be requested on public signup
+- [ ] Refresh rotates/revokes previous session; logout idempotent and revokes session
+- [ ] Sponsor ID lookup backed by MySQL; unknown/blocked IDs fail closed
+- [ ] Signup validates fields and consent; stores only pending request; duplicates rejected
+- [ ] No automatically created ACTIVE user, sponsor placement, commission or wallet
+- [ ] Compiled Next+Nest health/readiness, API proxy 401, CSS and JS asset smoke
+- [ ] Playwright actual login/logout, pending registration and sponsor lookup
+- [ ] 320px and 390px width, keyboard accessible tabs/field error states
 
-## Frontend verified by CI
-- [ ] Login tab and create account tab preserve source layout on desktop and mobile
-- [ ] No sample user accounts, passwords, role switching or unsecured preview dashboard
-- [ ] Login submits email/password to an API; never authenticates in browser
-- [ ] Sponsor lookup uses an API; unresolved or unavailable lookup fails closed
-- [ ] Registration fields include full name, email, mobile number, Sponsor ID, read-only Sponsor name, account type, primary interest, consent
-- [ ] Registration requires sponsor resolution before submitting; API failure never reports success
-- [ ] Compiled Next server serves HTML, CSS and JS and refuses `/demo`/`/dashboard`
-- [ ] Chromium route/action and 320px/390px mobile overflow smoke
-
-## BLOCKED: functional production acceptance
-- [ ] NestJS auth implemented with MySQL/Prisma, Argon2, secure session and RBAC
-- [ ] Production password enrollment/recovery and OTP provider approved and integrated
-- [ ] Unique sponsor ID lookup backed by MySQL with privacy-safe scope and abuse controls
-- [ ] Account activation and account-type permissions approved
-- [ ] Actual API integration, full browser login/register success+error UAT, logout and unauthorized 401
-- [ ] Pixel-visual comparison against supplied screenshots and real mobile devices
-- [ ] Local `npm run verify` confirmed by operator
-
-Frontend passing is **not** production identity approval.
+## Explicitly pending before production identity signoff
+- [ ] Mobile OTP provider approval and real deliver/verify UAT
+- [ ] Account password enrollment/recovery and verified activation
+- [ ] Approved consent/privacy-policy revision and retention
+- [ ] Verified role-assignment/upgrade and privileged MFA
+- [ ] Original screenshot side-by-side visual UAT with operator
+- [ ] Real production source-free deployment, backup/restore and security testing
