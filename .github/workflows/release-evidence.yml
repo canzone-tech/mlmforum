@@ -1,0 +1,52 @@
+name: Release Evidence
+on:
+  workflow_run:
+    workflows: ["Backend CI", "Frontend CI"]
+    types: [completed]
+    branches: [dev/local-foundation]
+permissions:
+  actions: read
+  contents: read
+jobs:
+  verify-sha:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    if: github.event.workflow_run.head_branch == 'dev/local-foundation'
+    steps:
+      - name: Confirm identical commit in both CI workflows
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          get_state() {
+            gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/$1/runs?head_sha=${SHA}&branch=dev%2Flocal-foundation&per_page=30" --jq '.workflow_runs | sort_by(.run_number) | last | .conclusion // "pending"'
+          }
+          backend="pending"; frontend="pending"
+          for attempt in $(seq 1 40); do
+            backend="$(get_state backend-ci.yml)"
+            frontend="$(get_state frontend-ci.yml)"
+            echo "SHA ${SHA}: backend=${backend}, frontend=${frontend}"
+            if [[ "$backend" == "success" && "$frontend" == "success" ]]; then break; fi
+            if [[ "$backend" == "failure" || "$frontend" == "failure" || "$backend" == "cancelled" || "$frontend" == "cancelled" ]]; then
+              echo "A same-SHA CI run is not green" >&2
+              exit 1
+            fi
+            sleep 20
+          done
+          if [[ "$backend" != "success" || "$frontend" != "success" ]]; then
+            echo "Timed out waiting for both exact-SHA CI workflows" >&2
+            exit 1
+          fi
+          jq -n --arg sha "$SHA" --arg repo "$GITHUB_REPOSITORY" '{
+            release_sha: $sha, repository: $repo, branch: "dev/local-foundation",
+            backend_ci: "success (scope-only; API not implemented)",
+            frontend_ci: "success (Next build, compiled runtime and browser tests)",
+            release_evidence: "success", production_approval: "PENDING",
+            local_verification: "NOT CONFIRMED", production_deployment: "NOT DEPLOYED"
+          }' > release-evidence.json
+          cat release-evidence.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-evidence-${{ github.event.workflow_run.head_sha }}
+          path: release-evidence.json

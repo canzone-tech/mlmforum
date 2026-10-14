@@ -1,0 +1,19 @@
+name: Backend CI
+on:
+  push:
+    branches: [dev/local-foundation]
+  pull_request:
+    branches: [dev/local-foundation]
+permissions:
+  contents: read
+jobs:
+  backend-scope:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify explicitly deferred API scope
+        run: bash scripts/verify-backend.sh
+      - name: State limits of evidence
+        run: |
+          echo "Backend CI PASS here means ONLY docs/scope gate; NestJS API, database and RBAC have NOT been implemented."
+          echo "backend_scope=NOT_IMPLEMENTED" >> "$GITHUB_STEP_SUMMARY"
