@@ -36,7 +36,6 @@ try {
   }
   const login = await (await fetch(base + "/login")).text();
   assert.match(login, /Sponsor ID|Welcome back/);
-  // Without copied standalone assets, HTML can pass while CSS/JS return 404.
   const assets = [...login.matchAll(/(?:src|href)="(\/_next\/static\/[^"]+)"/g)].map(match => match[1]);
   assert.ok(assets.some(asset => asset.endsWith(".css")), "No compiled CSS asset linked");
   assert.ok(assets.some(asset => asset.endsWith(".js")), "No compiled JavaScript asset linked");
@@ -45,7 +44,8 @@ try {
     assert.equal(response.status, 200, "Compiled static asset unavailable: " + path);
   }
   const admin = await (await fetch(base + "/demo?role=admin")).text();
-  assert.match(admin, /Administrator workspace/);
+  // React Server Components may insert a hydration boundary comment between text nodes.
+  assert.match(admin, /<h1>Administrator(?:<!-- -->)? workspace<\/h1>/);
   console.log("Compiled standalone startup, CSS/JS assets and route smoke passed.");
 } finally {
   child.kill("SIGTERM");
