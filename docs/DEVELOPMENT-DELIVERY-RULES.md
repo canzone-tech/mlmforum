@@ -1,19 +1,20 @@
 # Development and delivery rules
 
-## Client-source-first implementation
-Primary reference: client-provided `MLM_Community_Forum_MULTIPAGE_COMMUNITY_DISCUSSION_BUNDLE.zip`. This is a predevelopment prototype containing 5 HTML pages, styles, JavaScript, seven role navigation maps, workflow-specific form designs, and audit/requirements documents. Client screenshots are supplementary visual evidence, requested only for the module being implemented.
+## Client-source-first, integrated module delivery
+Reference: supplied `MLM_Community_Forum_MULTIPAGE_COMMUNITY_DISCUSSION_BUNDLE.zip` (HTML/CSS/JS, role-based UI and workflow documents). Request screenshots **only for the current module** as needed.
 
-1. Select one page/module from the client's existing navigation.
-2. Review its existing markup, CSS, JavaScript, audit documentation, labels, fields, validation, and permissions.
-3. Separate **visual demo behavior** from approved operational behavior; record missing approvals.
-4. Reuse shared layout/components and one configurable role/page registry. Avoid duplicate definitions and magic values.
-5. Implement just that module's frontend/API/data contracts if approved, without inventing compensation, eligibility, or payment behavior.
-6. Add focused regression tests and visual route smoke checks; update root verification and CI as appropriate.
-7. Commit on `dev/local-foundation`, review diff, check exact-SHA three CI gates, then request user local `git pull` and `npm run verify`.
-8. Production deployment is a separate authorized release step.
+1. Choose one client-defined real module. Inspect its HTML, styles, JavaScript, requirements, fields, role permissions and current repository implementation.
+2. Identify what is confirmed, what is only visual example behavior and what requires owner approval. Do not invent compensation, eligibility, payments or provider requirements.
+3. Implement the **minimal coherent vertical slice**: Next.js interface + NestJS REST validation/auth/RBAC + MySQL/Prisma data model/transaction needs. No disconnected UI and no fake-success handlers.
+4. Keep roles, navigation and approved policies configuration-driven; reuse existing components and contracts rather than duplicate logic.
+5. For the same module, test database migration/schema, API success/failure paths, authorization/ownership, frontend user actions, responsive appearance and backend/frontend integration. Include regression tests in repo.
+6. Root `npm run verify` runs **both** sides and fails if a required side or its checks are absent. Backend CI, Frontend CI and Release Evidence must be green on the **same commit SHA** before local handoff. Scope-only Backend CI is not sufficient.
+7. Review final diff and push normally on `dev/local-foundation`, with no production changes.
+8. User currently has **no local clone**. After integrated CI is green, the initial handoff is a **single branch-specific git clone** plus `npm run verify` from the cloned repository root. Only later updates use `git pull` + `npm run verify`.
+9. Deploy only after separate exact-release approval and all production/recovery prerequisites.
 
-## Avoid complexity and repetition
-Keep implementation readable and conventional. Use a single source of truth for branding, navigation, policies and environment settings. No advance engineering for unstarted modules, no duplicate work, no hard-coded live users or finances, and no false claims about tests or release status.
+## Current status
+Previous Login/Register UI exists, but real NestJS/MySQL authentication, registration and sponsor verification are missing. Therefore **Login/Register is NOT complete**, and the joint backend gate must stay red until real API and integration tests are implemented. Existing client source examples are references, not a second app to reproduce.
 
-## Implementation state
-Repository is being initialized. Login, registration, genealogy, ledger, wallet and administrative functions remain a **client prototype**, not validated production workflows.
+## Simplicity
+No advance engineering, unnecessary dependencies or duplicate module implementations. Do not pretend CI/local/deployment actions passed when they have not.

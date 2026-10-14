@@ -1,24 +1,23 @@
 # MLM Community Forum
 
-A real multi-role community platform under development. The client's HTML/CSS/JS is the source for screens and requested workflows, **not** authentication code, a development data source or permission policy.
+A **real** role-based community product built from the client's HTML/CSS/JS visual and workflow references. Development uses a small, module-by-module full-stack approach: **Next.js frontend + NestJS API + MySQL/Prisma data and integrated tests together**.
 
-## Login / Register milestone
+## Current implementation — INCOMPLETE
+Login/Register interface exists in Next.js, but real server-side authentication, registration, sponsor verification, role permissions, and persistence are NOT implemented. Browser requests fail closed. This is **not** an operational login/registration module. No seeded sample accounts or browser-selected auth roles.
 
-Next.js + TypeScript renders client-aligned responsive login and registration forms. Seven client roles are **not** selectable at login: authenticated identity and permitted roles must come exclusively from the future NestJS/MySQL backend. Self-registration account-type options are limited to the five non-privileged roles in `config/auth.ts` pending owner approval.
+Backend verification intentionally blocks green CI until a real API and database integration test suite is included. Frontend-only success is not feature completion.
 
-The frontend sends login/register/sponsor requests to `NEXT_PUBLIC_API_BASE_URL` (default `/api`). These backend endpoints are **not implemented yet**; requests fail closed and display an unavailable/verification message. **No user is authenticated or registered until the real backend exists and passes UAT.**
-
-## Verification
-
-Node.js 24 required. After exact-SHA Backend CI, Frontend CI and Release Evidence are green, run from repo root:
+## First-time local setup (AFTER all three real same-SHA CI gates pass)
+The repository is **not cloned locally yet**. When GitHub Backend CI, Frontend CI and Release Evidence are green together, clone the approved branch once:
 
 ```sh
-git pull
+git clone --branch dev/local-foundation --single-branch https://github.com/canzone-tech/mlmforum.git
+cd mlmforum
 npm run verify
 ```
 
-This performs a deterministic npm install, lint/types, source/validation tests, Next production build, compiled server/CSS/JS startup, browser form interactions and mobile overflow checks.
+For later development updates: `git pull` then `npm run verify` from the repository root.
 
-**Current scope:** backend CI is explicitly scope-only; it does not claim authentication, DB, RBAC or provider verification. Production authorization remains pending.
+Node.js 24 required. Root verification must run both backend and frontend, including real database/API/browser workflows. No production deployment without separate approval and recovery evidence.
 
-See `AGENTS.md`, `docs/UAT-CHECKLIST.md`, `docs/BUSINESS-RULES-REGISTER.md`, and `docs/RELEASE-SIGNOFF.md`.
+See `AGENTS.md`, `docs/DEVELOPMENT-DELIVERY-RULES.md`, `docs/BUSINESS-RULES-REGISTER.md`, and `docs/RELEASE-SIGNOFF.md`.

@@ -1,25 +1,28 @@
 # MLM Forum — Repository engineering rules
 
 ## Delivery principle
-Implement **one client-defined module at a time**, retaining the supplied prototype's HTML/CSS/JS behavior and visual design. Ask for the screenshot of the exact module when needed. Do not redesign, invent functionality, or pre-build future modules.
+Build **one real, client-defined module at a time**, preserving the supplied HTML/CSS/JS design and approved user workflow. Ask for a screenshot of that specific page when useful.
+
+**Mandatory vertical-slice rule:** frontend (Next.js), backend (NestJS API), and necessary MySQL/Prisma persistence are designed, implemented, and tested **together for each module**. Do not call a frontend-only form an implemented module. No mock login, fake credential bypass or sample financial data in application logic. Backend auth/RBAC must decide access, never a browser role selector.
 
 ## Keep it simple
-- Inspect the existing source and repository before changes; reuse existing code. Never redo work already present.
-- Choose the smallest maintainable implementation. No speculative abstractions, future-proof frameworks, extra services, or unnecessary dependencies.
-- Keep role names, role-to-menu mappings, page metadata, configurable policies, public labels, URLs, ports, and environment settings in one clear configuration/source of truth where appropriate. Do not scatter duplicate literals.
-- **Never hardcode production business rules, credentials, balances, member records, commission amounts, rank thresholds, or payout behavior.**
-- Source prototype's example data is **demo-only**. It cannot become production persistence, approved policy, or real transaction data.
-- Use real backend validation and authorization for real actions; UI visibility is never security.
+- Inspect existing source and GitHub before any changes. Reuse what exists and avoid repeating tasks.
+- Implement only current client-defined functionality: no speculative modules, unnecessary services or advance engineering.
+- Use one clear configuration/source of truth for reusable roles, menus, application settings and approved versioned policies. Do not scatter duplicate literals.
+- Never hardcode production members, passwords, Sponsor IDs, fees, balances, rank eligibility, commissions or payout behavior.
+- Client prototype's example data is **visual reference only**, not authoritative real records.
+- Secure server-side validation/authorization, auditability and database ownership matter for real operations.
 
 ## Project boundaries
-This independent project uses Next.js + TypeScript, NestJS REST, MySQL + Prisma, JWT/Argon2/RBAC as enabled by approved modules, Node.js 24, and GitHub Actions. MongoDB/Redis only with demonstrated need.
-Never import data, rules, infrastructure, or branding from unrelated projects.
-Financial rules, rank qualifications, and payment integrations require explicit owner approval; MySQL remains authoritative.
+Independent project: Next.js + TypeScript frontend, NestJS + TypeScript REST, MySQL 8 + Prisma, JWT access/refresh + Argon2 + RBAC when implemented, Node.js 24; use MongoDB/Redis only upon demonstrated need. Do not reuse other-project rules, data, secrets, branding or infrastructure.
+Payments/compensation and rank qualification must not be enabled without explicit business approval. MySQL is authoritative.
 
-## Git + verification
-- Work only on `dev/local-foundation`; no main/default changes except the initial empty-repository bootstrap already completed.
-- Preserve unrelated work; no force pushes or history rewrites.
-- Commit source-aligned incremental work and verify Backend CI, Frontend CI, and Release Evidence on the **same exact SHA**.
-- Root `npm run verify` is the local gate; do not claim local verification without user confirmation.
-- Production requires a separate exact-release approval, recovery evidence, and safe compiled artifact deployment.
-- Report current SHA, CI status, local status, changed files, blockers; never claim PASS without evidence.
+## Git, full-stack CI and local bootstrap
+- Work only on `dev/local-foundation`. Never force push, rewrite history or change other projects.
+- **Backend CI must run real backend validation/tests for the current module**, including relevant DB/API/security checks. A scope-only placeholder must NOT pass as Backend CI.
+- Frontend CI must run lint/types/build and real browser route/action smoke. Release Evidence may turn green **only on the same SHA** as successful real Backend CI and Frontend CI.
+- Root `npm run verify` must exercise backend and frontend together. If either part is missing, **fail closed**.
+- **User has not created a local repository folder yet.** Never ask for `git pull` alone. After exact-SHA three-gate CI is green, provide the initial clone of `dev/local-foundation`, followed by root `npm run verify`. For subsequent updates use `git pull` + `npm run verify`.
+- Local verification is unconfirmed until user runs it; do not make unsupported PASS claims.
+- Production deployment requires separate exact-release approval, off-host backup/restore evidence, immutable source-free artifact, safe rollback and post-deploy UAT.
+- Report changed files, branch/SHA, exact-SHA CI statuses, local status and blockers.
