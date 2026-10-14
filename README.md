@@ -12,7 +12,7 @@ Demo reference data is held in **one** `config/demo.ts` module, never in real da
 
 ## Setup and verification
 
-Use Node.js 24. Once the initial CI-generated `package-lock.json` is committed, from repo root:
+Use Node.js 24. The committed `package-lock.json` keeps installs reproducible. From repo root, after exact-SHA CI gates pass:
 
 ```sh
 git pull
@@ -26,7 +26,7 @@ For dev preview after install, run `npm run dev`; browse `http://localhost:3000/
 ## CI and release state
 
 - Backend CI: explicit scope check; **backend not implemented**.
-- Frontend CI: build/runtime/browser tests; first workflow bootstrap commits the npm lockfile on the approved development branch.
+- Frontend CI: locked install, build/runtime/browser tests.
 - Release Evidence: checks Backend + Frontend workflow conclusions on the **same SHA**, saves JSON evidence, and keeps production approval **PENDING**.
 - No production deployment approval or real financial behavior is inferred.
 
