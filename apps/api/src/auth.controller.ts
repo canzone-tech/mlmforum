@@ -33,7 +33,7 @@ export class AuthController {
  }
  @Post("auth/login")
  @HttpCode(HttpStatus.OK)
- @Throttle({default:{limit:5,ttl:60000}})
+ @Throttle({default:{limit:config.AUTH_LOGIN_RATE_LIMIT,ttl:60000}})
  async login(@Body() data:unknown,@Res({passthrough:true}) res:Response,
   @Headers("origin") origin:string|undefined,@Headers("content-type") ct:string|undefined){
   this.requireOrigin(origin,ct);
