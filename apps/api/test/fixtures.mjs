@@ -4,7 +4,10 @@ const db=new PrismaClient();
 const seed={
  sponsor:{email:"test-sponsor@mlmforum.invalid",memberCode:"TEST-SPONSOR-1",mobile:"9876543210",name:"Test Sponsor"},
  member:{email:"test-member@mlmforum.invalid",memberCode:"TEST-MEMBER-1",mobile:"9876543211",name:"Test Member"},
- blocked:{email:"test-blocked@mlmforum.invalid",memberCode:"TEST-BLOCKED-1",mobile:"9876543212",name:"Test Blocked"}
+ blocked:{email:"test-blocked@mlmforum.invalid",memberCode:"TEST-BLOCKED-1",mobile:"9876543212",name:"Test Blocked"},
+ childA:{email:"test-child-a@mlmforum.invalid",memberCode:"TEST-CHILD-A",mobile:"9876543215",name:"Downline Alpha"},
+ childB:{email:"test-child-b@mlmforum.invalid",memberCode:"TEST-CHILD-B",mobile:"9876543216",name:"Downline Beta"},
+ grandchild:{email:"test-grandchild@mlmforum.invalid",memberCode:"TEST-GRANDCHILD",mobile:"9876543217",name:"Downline Gamma"}
 };
 export const testPassword="Integration-Test-Password-Only-123!";
 export const testAccounts=seed;
@@ -35,6 +38,23 @@ export async function createFixture(){
    create:{userId:user.id,role:fixtureRole},update:{}
   });
  }
+ // Only test fixtures establish confirmed sponsorship links. Pending registration
+ // does not create a link and no production placement workflow is added here.
+ const accounts=await db.user.findMany({
+  where:{email:{in:Object.values(seed).map(x=>x.email)}},select:{id:true,email:true}
+ });
+ const ids=Object.fromEntries(accounts.map(user=>[user.email,user.id]));
+ for(const [child,parent] of [
+  [seed.childA.email,seed.member.email],
+  [seed.childB.email,seed.member.email],
+  [seed.grandchild.email,seed.childA.email]
+ ]){
+  await db.memberSponsorLink.upsert({
+   where:{memberId:ids[child]},
+   create:{memberId:ids[child],sponsorId:ids[parent]},
+   update:{sponsorId:ids[parent]}
+  });
+ }
 }
 export async function cleanFixture(){
  ensureIsolatedTestDb();
@@ -45,6 +65,7 @@ export async function cleanFixture(){
   where:{email:{in:Object.values(seed).map(x=>x.email)}},select:{id:true}
  })).map(x=>x.id);
  if(ids.length){
+  await db.memberSponsorLink.deleteMany({where:{OR:[{memberId:{in:ids}},{sponsorId:{in:ids}}]}});
   await db.session.deleteMany({where:{userId:{in:ids}}});
   await db.userRole.deleteMany({where:{userId:{in:ids}}});
   await db.user.deleteMany({where:{id:{in:ids}}});

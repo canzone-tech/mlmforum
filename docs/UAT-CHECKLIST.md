@@ -31,3 +31,15 @@
 - [ ] Existing Login/Register logout and auth flows continue working
 - [ ] Sidebar opens/closes at mobile width with keyboard-accessible toggle; no 390px horizontal overflow
 - [ ] Separate screenshot-to-implementation visual UAT still pending
+
+## Genealogy Tree read-only module
+- [ ] `MemberSponsorLink` append-only migration applies successfully; one sponsor per child via unique member ID, FKs, direct self-sponsor check
+- [ ] Pending registration does not create a confirmed sponsor link or activated member
+- [ ] MySQL root-to-level traversal is bounded, non-binary and omits duplicate/cyclic root nodes
+- [ ] Own-network scope enforced server-side even when `memberId` or `role` query strings are supplied
+- [ ] Guest/revoked session 401, non-member role 403, suspended/blocked records not disclosed
+- [ ] Names/member IDs only, no email, password, mobile or financial data
+- [ ] Search/filter/reset/selection and 1:10 root/level card layout on desktop and 390px mobile
+- [ ] Empty network and cap notices never imply eligible-rank or exhaustive counts
+- [ ] Client screenshot side-by-side visual UAT remains pending
+- [ ] Real sponsor placement/change policy and admin workflows require business signoff before any write endpoint

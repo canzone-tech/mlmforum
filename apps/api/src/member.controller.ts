@@ -3,18 +3,28 @@ import {Request} from "express";
 import {Role} from "@prisma/client";
 import {AuthService} from "./auth.service";
 import {Database} from "./db.service";
+import {GenealogyService} from "./genealogy.service";
 
 @Controller("api/member")
 export class MemberController {
- constructor(private readonly auth:AuthService,private readonly db:Database){}
- @Get("overview")
- async overview(@Req() req:Request) {
+ constructor(private readonly auth:AuthService,private readonly db:Database,private readonly genealogy:GenealogyService){}
+ @Get("genealogy")
+ async genealogyTree(@Req() req:Request){
+  const member=await this.authenticatedMember(req);
+  return this.genealogy.read(member.id);
+ }
+ private async authenticatedMember(req:Request){
   const access=req.headers.cookie?.split(";")
    .map(part=>part.trim()).find(part=>part.startsWith("mlmf_access="))
    ?.slice("mlmf_access=".length);
   const identity=await this.auth.identity(access);
   if(!identity.roles.includes(Role.MEMBER))
    throw new ForbiddenException("Member access required");
+  return identity;
+ }
+ @Get("overview")
+ async overview(@Req() req:Request) {
+  const identity=await this.authenticatedMember(req);
   // Identity comes from the verified server session, not a query parameter.
   const member=await this.db.user.findUniqueOrThrow({
    where:{id:identity.id},

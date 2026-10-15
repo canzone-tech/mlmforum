@@ -14,3 +14,5 @@
 - Report commit SHA, changed files, real CI status, local status, pending approvals and deployment status. No unsupported PASS.
 
 - Current operator decision: **defer all local clone/install/Docker/verification** while another project runs locally. Keep working only in GitHub and verify through GitHub Actions until user explicitly requests local testing. Do not ask user to run local commands merely because three CI gates pass.
+
+- Genealogy business safety: pending registration requests must never become confirmed downline links automatically. Read-only relationships are not eligibility/rank/payout calculations; sponsor changes and qualification policies require prior approval.

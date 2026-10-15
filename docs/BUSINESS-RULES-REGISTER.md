@@ -14,3 +14,9 @@ Client source: `MOBILE_NAV_AND_REGISTRATION_AUDIT.md`, `RBAC_PERMISSION_MATRIX.m
 | Mobile OTP | Provider verification before account activation | BLOCKED; no provider configured, no fabricated OTP success |
 
 Do not mistake an integration fixture or UI label for an approved production identity or business policy.
+
+## Genealogy read-only slice — 15 October 2026
+
+Confirmed baseline: non-binary 1:10, direct sponsor relationships, level-wise display. Production **active/eligible** policy, whether to enforce a ten-direct limit, sponsor-change approval, and rank qualification are still **UNAPPROVED** for operational updates.
+
+`MemberSponsorLink` is an authoritative confirmed-link read model; pending registration requests do not populate it. No public placement/change endpoint, rank evaluation or compensation calculation is implemented. Only authenticated MEMBER accounts may read their own structural network. Visible descendants are restricted to currently ACTIVE and mobile-verified user records as a conservative privacy/display gate, **not** as final business eligibility. View depth and per-level display cap are configuration-driven. Counts refer only to displayed nodes, never total eligible network population.

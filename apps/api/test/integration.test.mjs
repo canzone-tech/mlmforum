@@ -98,6 +98,70 @@ test("compiled NestJS + MySQL login, sponsor, registration, cookie/RBAC and sess
     headers:{Cookie:memberCookies}
    })).status,401);
   });
+  await t.test("read-only non-binary genealogy is scoped, depth-bounded and resists cycles",async()=>{
+   assert.equal((await request("/api/member/genealogy")).status,401);
+   const memberLogin=await post("/api/auth/login",{
+    email:testAccounts.member.email,password:testPassword
+   });
+   assert.equal(memberLogin.status,200);
+   const memberCookies=cookiePairs(memberLogin);
+   const treeResponse=await request("/api/member/genealogy?memberId=arbitrary&role=admin",{
+    headers:{Cookie:memberCookies}
+   });
+   assert.equal(treeResponse.status,200);
+   const tree=await treeResponse.json();
+   assert.equal(tree.root.memberCode,testAccounts.member.memberCode);
+   assert.equal(tree.levels[0].level,1);
+   assert.deepEqual(tree.levels[0].members.map(x=>x.memberCode),
+    [testAccounts.childA.memberCode,testAccounts.childB.memberCode]);
+   assert.equal(tree.levels[1].members[0].memberCode,testAccounts.grandchild.memberCode);
+   assert.equal(tree.levels[1].members[0].sponsorCode,testAccounts.childA.memberCode);
+   assert.equal(tree.levels[2].displayed,0);
+   assert.ok(tree.viewMaxLevel<=3);
+   assert.ok(!JSON.stringify(tree).includes(testAccounts.sponsor.email));
+   assert.ok(!JSON.stringify(tree).includes("passwordHash"));
+   assert.ok(!JSON.stringify(tree).includes(testAccounts.blocked.memberCode));
+   assert.equal("rank" in tree,false);
+   assert.equal("commission" in tree,false);
+   const outsider=await post("/api/auth/login",{
+    email:testAccounts.sponsor.email,password:testPassword
+   });
+   assert.equal(outsider.status,200);
+   assert.equal((await request("/api/member/genealogy",{
+    headers:{Cookie:cookiePairs(outsider)}
+   })).status,403);
+   const nestedLogin=await post("/api/auth/login",{
+    email:testAccounts.childA.email,password:testPassword
+   });
+   assert.equal(nestedLogin.status,200);
+   const nestedTree=await (await request("/api/member/genealogy",{
+    headers:{Cookie:cookiePairs(nestedLogin)}
+   })).json();
+   assert.deepEqual(nestedTree.levels[0].members.map(x=>x.memberCode),
+    [testAccounts.grandchild.memberCode]);
+   assert.ok(!JSON.stringify(nestedTree).includes(testAccounts.childB.memberCode));
+
+   const member=await db.user.findUniqueOrThrow({
+    where:{email:testAccounts.member.email},select:{id:true}
+   });
+   const grandchild=await db.user.findUniqueOrThrow({
+    where:{email:testAccounts.grandchild.email},select:{id:true}
+   });
+   // Corrupt historical cycle: reader must never echo the root as descendant.
+   await db.memberSponsorLink.create({
+    data:{memberId:member.id,sponsorId:grandchild.id}
+   });
+   const cyclic=await (await request("/api/member/genealogy",{
+    headers:{Cookie:memberCookies}
+   })).json();
+   assert.equal(cyclic.levels[2].displayed,0);
+   assert.ok(!cyclic.levels.flatMap(x=>x.members).some(x=>x.memberCode===testAccounts.member.memberCode));
+   await db.memberSponsorLink.delete({where:{memberId:member.id}});
+   assert.equal((await post("/api/auth/logout",{},memberCookies)).status,204);
+   assert.equal((await request("/api/member/genealogy",{
+    headers:{Cookie:memberCookies}
+   })).status,401);
+  });
   await t.test("unauthorized and suspended login fails",async()=>{
    assert.equal((await post("/api/auth/login",{email:testAccounts.member.email,password:"wrong"})).status,401);
    assert.equal((await post("/api/auth/login",{email:testAccounts.blocked.email,password:testPassword})).status,401);

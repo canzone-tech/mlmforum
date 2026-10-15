@@ -14,7 +14,7 @@ test("login is server-authenticated, user role comes from database",async({page}
  await expect(page.getByText("TEST-MEMBER-1")).toHaveCount(2);
  await expect(page.getByRole("heading",{name:"Your recent account activity"})).toBeVisible();
  await expect(page.getByRole("heading",{name:"Recommended next actions"})).toBeVisible();
- await expect(page.getByRole("link",{name:/Genealogy Tree/})).toHaveCount(0);
+ await expect(page.getByRole("link",{name:/Genealogy Tree/})).toHaveCount(1);
  await page.getByRole("button",{name:"Logout"}).click();
  await expect(page).toHaveURL(/\/login$/);
  await page.goto("/dashboard");
@@ -84,4 +84,50 @@ test("member dashboard does not expose private profile data to guests",async({pa
  await expect(page.getByText("TEST-MEMBER-1")).toHaveCount(0);
  const response=await page.request.get("/api/member/overview");
  expect(response.status()).toBe(401);
+});
+
+test("member genealogy reads own confirmed network, filters by level and resets",async({page})=>{
+ await page.goto("/login");
+ await page.locator("#email").fill("test-member@mlmforum.invalid");
+ await page.locator("#password").fill("Integration-Test-Password-Only-123!");
+ await page.getByRole("button",{name:"Login →"}).click();
+ await expect(page).toHaveURL(/\/dashboard$/);
+ await page.getByRole("link",{name:/Genealogy Tree/}).click();
+ await expect(page).toHaveURL(/\/dashboard\/genealogy$/);
+ await expect(page.getByRole("heading",{name:"MLM Genealogy — Level Plan 1:10"})).toBeVisible();
+ await expect(page.getByText("TEST-MEMBER-1")).toBeVisible();
+ await expect(page.getByRole("button",{name:/Downline Alpha/})).toBeVisible();
+ await expect(page.getByRole("button",{name:/Downline Beta/})).toBeVisible();
+ await expect(page.getByRole("button",{name:/Downline Gamma/})).toBeVisible();
+ await page.getByRole("combobox",{name:"Choose genealogy level"}).selectOption("2");
+ await expect(page.getByRole("button",{name:/Downline Alpha/})).toHaveCount(0);
+ await expect(page.getByRole("button",{name:/Downline Gamma/})).toBeVisible();
+ await page.getByRole("combobox",{name:"Choose genealogy level"}).selectOption("all");
+ await page.getByRole("textbox",{name:"Search displayed member ID or name"}).fill("DOWNLINE BETA");
+ await page.getByRole("button",{name:"Search",exact:true}).click();
+ await expect(page.getByRole("button",{name:/Downline Beta/})).toBeVisible();
+ await expect(page.getByRole("button",{name:/Downline Alpha/})).toHaveCount(0);
+ await page.getByRole("button",{name:"Reset view"}).click();
+ await expect(page.getByRole("button",{name:/Downline Alpha/})).toBeVisible();
+ await expect(page.getByRole("button",{name:/Downline Gamma/})).toBeVisible();
+ await page.getByRole("button",{name:/Downline Alpha/}).click();
+ await expect(page.getByText(/Selected member: TEST-CHILD-A/)).toBeVisible();
+});
+test("guests do not access genealogy records",async({page})=>{
+ await page.goto("/dashboard/genealogy");
+ await expect(page.getByRole("heading",{name:"Login required"})).toBeVisible();
+ expect((await page.request.get("/api/member/genealogy")).status()).toBe(401);
+});
+test("mobile genealogy grid fits viewport and member sidebar stays navigable",async({page})=>{
+ await page.setViewportSize({width:390,height:850});
+ await page.goto("/login");
+ await page.locator("#email").fill("test-member@mlmforum.invalid");
+ await page.locator("#password").fill("Integration-Test-Password-Only-123!");
+ await page.getByRole("button",{name:"Login →"}).click();
+ await page.getByRole("button",{name:"Toggle workspace menu"}).click();
+ await page.getByRole("link",{name:/Genealogy Tree/}).click();
+ await expect(page).toHaveURL(/\/dashboard\/genealogy$/);
+ await expect(page.getByRole("heading",{name:"LEVEL 1 — DIRECT MEMBERS"})).toBeVisible();
+ await expect(page.getByRole("button",{name:/Downline Alpha/})).toBeVisible();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
 });

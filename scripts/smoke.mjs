@@ -23,7 +23,7 @@ try{
   await pause(300);
  }
  assert.ok(ready,"Compiled Next server readiness timeout: "+output);
- for(const path of ["/","/login","/login?tab=register","/dashboard"]){
+ for(const path of ["/","/login","/login?tab=register","/dashboard","/dashboard/genealogy"]){
   const response=await fetch(base+path);
   assert.equal(response.status,200,"Next route "+path);
   assert.match(await response.text(),/MLM COMMUNITY FORUM/);
@@ -35,6 +35,8 @@ try{
  assert.equal(unauth.status,401,"Same-origin Next API rewrite must preserve unauthenticated 401");
  const restricted=await fetch(base+"/api/member/overview");
  assert.equal(restricted.status,401,"Member overview must deny guest access");
+ const genealogy=await fetch(base+"/api/member/genealogy");
+ assert.equal(genealogy.status,401,"Member genealogy must deny guest access");
  const login=await(await fetch(base+"/login")).text();
  assert.doesNotMatch(login,/Demo@123|member@mlmforum\.demo|Open Demo Dashboard/);
  const assets=[...login.matchAll(/(?:src|href)="(\/_next\/static\/[^"]+)"/g)].map(m=>m[1]);

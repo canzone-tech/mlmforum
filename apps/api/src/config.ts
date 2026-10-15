@@ -9,6 +9,8 @@ const settings=z.object({
  CONSENT_POLICY_VERSION:z.string().min(1).max(60),
  API_HOST:z.string().default("127.0.0.1"),
  AUTH_LOGIN_RATE_LIMIT:z.coerce.number().int().min(1).max(100).default(5),
+ GENEALOGY_VIEW_MAX_LEVEL:z.coerce.number().int().min(1).max(3).default(3),
+ GENEALOGY_VIEW_MAX_NODES_PER_LEVEL:z.coerce.number().int().min(10).max(500).default(100),
  API_PORT:z.coerce.number().int().min(1).max(65535).default(4000)
 }).parse(process.env);
 if(settings.JWT_ACCESS_SECRET===settings.JWT_REFRESH_SECRET)throw new Error("Access and refresh secrets must differ");

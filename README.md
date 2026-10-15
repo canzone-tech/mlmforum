@@ -40,3 +40,11 @@ Backend CI, Frontend CI and Release Evidence must all pass for the same SHA, the
 The screenshot-defined member sidebar, four-summary-card layout, recent-activity table and next-actions panel use real logged-in member account data. The API `GET /api/member/overview` requires a current server session and MEMBER RBAC; users cannot query other profiles through a supplied member ID. Recent sign-ins derive from MySQL sessions. The client screenshot's discussion/event/resource statistics are intentionally not copied as live numbers because those modules are not implemented. Other member pages are visibly disabled rather than linked to dummy functionality.
 
 **Local setup remains deferred at owner's request** because another project is running on that machine. Do not ask for clone/install/verify until owner says local environment is free. GitHub full-stack CI is the active gate.
+
+## Member Genealogy Tree (read-only)
+
+`/dashboard/genealogy` is available to authenticated MEMBER accounts. `GET /api/member/genealogy` returns only the member's own confirmed sponsor-link hierarchy from MySQL/Prisma, limited to the source prototype's first three visual levels. Root/member card layout, search among currently displayed nodes, level selector and reset follow the client screenshot.
+
+No pending applications are attached as live downline. This view does **not** enforce sponsor placement or rank qualification, calculate commissions, perform payments, or expose private contact details. ACTIVE/mobile-verified visibility is a conservative display gate rather than a final eligibility definition. Depth/cap are configured via `GENEALOGY_VIEW_MAX_LEVEL` and `GENEALOGY_VIEW_MAX_NODES_PER_LEVEL`. The UI identifies partial results whenever a view cap is reached.
+
+Local clone, installation, Docker and verification remain deferred at owner request. GitHub Actions provides the current test evidence.

@@ -5,6 +5,7 @@ import {Database} from "./db.service";
 import {AuthService} from "./auth.service";
 import {AuthController} from "./auth.controller";
 import {MemberController} from "./member.controller";
+import {GenealogyService} from "./genealogy.service";
 @Controller("health")
 class HealthController {
  constructor(private readonly db:Database){}
@@ -17,6 +18,6 @@ class HealthController {
 @Module({
  imports:[ThrottlerModule.forRoot([{ttl:60000,limit:60}])],
  controllers:[AuthController,MemberController,HealthController],
- providers:[Database,AuthService,{provide:APP_GUARD,useClass:ThrottlerGuard}]
+ providers:[Database,AuthService,GenealogyService,{provide:APP_GUARD,useClass:ThrottlerGuard}]
 })
 export class AppModule {}

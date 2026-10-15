@@ -133,3 +133,44 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
  .dash-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
  .dash-header .dash-user>.btn{padding:8px;font-size:10px}
 }
+
+/* Genealogy: client level-plan card hierarchy, scoped to read-only member view. */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.genealogy-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0 18px}
+.genealogy-toolbar input,.genealogy-toolbar select{min-width:145px;max-width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+.genealogy-toolbar input{flex:0 1 220px}
+.tree-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:12px 0}
+.tree-stats>div{background:#f1f5fb;border-radius:10px;padding:12px;min-width:0}
+.tree-stats b,.tree-stats small{display:block}
+.tree-stats b{font-size:18px;color:var(--navy);overflow-wrap:anywhere}
+.tree-stats small{font-size:10px;color:var(--muted);margin-top:5px}
+.genealogy-wrap{background:#fff;border:1px solid var(--line);border-radius:16px;padding:17px;min-width:0}
+.level-tree{display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px 9px}
+.level-root{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:190px;max-width:100%;padding:17px 24px;border:0;border-radius:14px;background:linear-gradient(130deg,#071b49,#123f82);color:#fff;cursor:pointer;box-shadow:var(--shadow)}
+.level-root b{font-size:14px}
+.level-root small{color:#dce9fb}
+.root-crown{font-size:10px;letter-spacing:1px;font-weight:800;color:#dce9fb}
+.genealogy-level{width:100%;display:flex;flex-direction:column;align-items:center;gap:10px}
+.level-connector{height:26px;width:2px;background:#8daedc}
+.level-heading{width:100%;text-align:center;color:var(--navy);font-size:15px;margin:5px 0}
+.level-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:11px;width:100%}
+.level-member{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:5px;padding:13px;min-height:104px;min-width:0;text-align:left;border:1px solid #cbd8ec;background:#fff;color:var(--ink);border-radius:11px;cursor:pointer}
+.level-member:hover,.level-member:focus-visible{border-color:var(--blue2)}
+.level-member b,.level-member small{overflow-wrap:anywhere;max-width:100%}
+.level-member b{font-size:12px;padding-right:18px}
+.level-member small{color:var(--muted);font-size:10px}
+.level-member em{font-size:10px;font-style:normal;border-radius:20px;color:var(--blue);background:#eaf1fb;padding:3px 7px}
+.level-number{position:absolute;right:9px;top:9px;display:grid;place-items:center;background:#dce9fb;color:var(--blue);border-radius:50%;width:23px;height:23px;font-size:11px;font-weight:800}
+.empty-tree{width:100%;text-align:center;color:var(--muted);font-size:12px;padding:18px;border:1px dashed var(--line);border-radius:9px}
+.genealogy-message{background:#fff4fa;color:#8c235e;font-size:11px;border-radius:9px;padding:11px;line-height:1.5;margin:12px 0}
+@media(max-width:900px){.level-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:620px){
+ .genealogy-toolbar input{flex:1 1 100%;width:100%}
+ .genealogy-toolbar select{flex:1 1 100%}
+ .tree-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .genealogy-wrap{padding:10px}
+ .level-tree{padding:9px 3px}
+ .level-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .level-member{padding:11px 9px;min-height:110px}
+ .level-root{width:100%;max-width:260px}
+}
