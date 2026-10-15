@@ -33,6 +33,8 @@ try{
  assert.equal(readyApi.status,200,"Compiled NestJS DB readiness");
  const unauth=await fetch(base+"/api/auth/me");
  assert.equal(unauth.status,401,"Same-origin Next API rewrite must preserve unauthenticated 401");
+ const restricted=await fetch(base+"/api/member/overview");
+ assert.equal(restricted.status,401,"Member overview must deny guest access");
  const login=await(await fetch(base+"/login")).text();
  assert.doesNotMatch(login,/Demo@123|member@mlmforum\.demo|Open Demo Dashboard/);
  const assets=[...login.matchAll(/(?:src|href)="(\/_next\/static\/[^"]+)"/g)].map(m=>m[1]);

@@ -27,9 +27,12 @@ export async function createFixture(){
    update:{name:data.name,passwordHash,status:key==="blocked"?UserStatus.SUSPENDED:UserStatus.ACTIVE,
     mobileVerifiedAt:new Date(),emailVerifiedAt:new Date()}
   });
+  const fixtureRole=key==="sponsor"?Role.BUSINESS:Role.MEMBER;
+  // Deterministic when the same isolated test DB is reused.
+  await db.userRole.deleteMany({where:{userId:user.id,role:{not:fixtureRole}}});
   await db.userRole.upsert({
-   where:{userId_role:{userId:user.id,role:Role.MEMBER}},
-   create:{userId:user.id,role:Role.MEMBER},update:{}
+   where:{userId_role:{userId:user.id,role:fixtureRole}},
+   create:{userId:user.id,role:fixtureRole},update:{}
   });
  }
 }

@@ -21,3 +21,13 @@
 - [ ] Verified role-assignment/upgrade and privileged MFA
 - [ ] Original screenshot side-by-side visual UAT with operator
 - [ ] Real production source-free deployment, backup/restore and security testing
+
+## Member dashboard overview (client screenshot reference)
+- [ ] Correct member navigation order and labels from client `app.js`; unimplemented links clearly disabled
+- [ ] Actual logged-in user name, member code, status and verification from authoritative MySQL records
+- [ ] Recent sign-ins scoped to authenticated member, no cross-member query override
+- [ ] No client sample discussion/event/resource counts used as real statistics
+- [ ] Non-member users receive API 403; guests/revoked session receive 401
+- [ ] Existing Login/Register logout and auth flows continue working
+- [ ] Sidebar opens/closes at mobile width with keyboard-accessible toggle; no 390px horizontal overflow
+- [ ] Separate screenshot-to-implementation visual UAT still pending

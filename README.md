@@ -34,3 +34,9 @@ On later updates: `git pull` and `npm run verify`.
 ## Release
 
 Backend CI, Frontend CI and Release Evidence must all pass for the same SHA, then user confirms local verification. CI green is not production approval. Separate owner approvals, provider UAT, backup/restore and source-free immutable deployment evidence are required.
+
+## Member dashboard overview slice
+
+The screenshot-defined member sidebar, four-summary-card layout, recent-activity table and next-actions panel use real logged-in member account data. The API `GET /api/member/overview` requires a current server session and MEMBER RBAC; users cannot query other profiles through a supplied member ID. Recent sign-ins derive from MySQL sessions. The client screenshot's discussion/event/resource statistics are intentionally not copied as live numbers because those modules are not implemented. Other member pages are visibly disabled rather than linked to dummy functionality.
+
+**Local setup remains deferred at owner's request** because another project is running on that machine. Do not ask for clone/install/verify until owner says local environment is free. GitHub full-stack CI is the active gate.

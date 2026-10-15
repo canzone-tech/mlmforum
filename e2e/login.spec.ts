@@ -8,8 +8,13 @@ test("login is server-authenticated, user role comes from database",async({page}
  await page.locator("#password").fill("Integration-Test-Password-Only-123!");
  await page.getByRole("button",{name:"Login →"}).click();
  await expect(page).toHaveURL(/\/dashboard$/);
- await expect(page.getByRole("heading",{name:"Welcome, Test Member"})).toBeVisible();
- await expect(page.getByText("Signed in. Your authorized role: MEMBER",{exact:true})).toBeVisible();
+ await expect(page.getByRole("heading",{name:/Good day, Test/})).toBeVisible();
+ await expect(page.getByRole("navigation",{name:"Member modules"})).toBeVisible();
+ await expect(page.getByRole("region",{name:"Your member account summary"})).toBeVisible();
+ await expect(page.getByText("TEST-MEMBER-1")).toHaveCount(2);
+ await expect(page.getByRole("heading",{name:"Your recent account activity"})).toBeVisible();
+ await expect(page.getByRole("heading",{name:"Recommended next actions"})).toBeVisible();
+ await expect(page.getByRole("link",{name:/Genealogy Tree/})).toHaveCount(0);
  await page.getByRole("button",{name:"Logout"}).click();
  await expect(page).toHaveURL(/\/login$/);
  await page.goto("/dashboard");
@@ -55,3 +60,28 @@ for(const width of [390,320]){
   expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
  });
 }
+
+test("member dashboard mobile navigation opens and closes accessibly",async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.goto("/login");
+ await page.locator("#email").fill("test-member@mlmforum.invalid");
+ await page.locator("#password").fill("Integration-Test-Password-Only-123!");
+ await page.getByRole("button",{name:"Login →"}).click();
+ await expect(page).toHaveURL(/\/dashboard$/);
+ const menu=page.getByRole("button",{name:"Toggle workspace menu"});
+ await expect(menu).toHaveAttribute("aria-expanded","false");
+ await menu.click();
+ await expect(menu).toHaveAttribute("aria-expanded","true");
+ await expect(page.getByRole("navigation",{name:"Member modules"})).toBeVisible();
+ await expect(page.getByText("Genealogy Tree")).toBeVisible();
+ await page.getByRole("button",{name:"Close workspace menu"}).click();
+ await expect(menu).toHaveAttribute("aria-expanded","false");
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+});
+test("member dashboard does not expose private profile data to guests",async({page})=>{
+ await page.goto("/dashboard");
+ await expect(page.getByRole("heading",{name:"Login required"})).toBeVisible();
+ await expect(page.getByText("TEST-MEMBER-1")).toHaveCount(0);
+ const response=await page.request.get("/api/member/overview");
+ expect(response.status()).toBe(401);
+});

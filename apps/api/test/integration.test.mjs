@@ -66,6 +66,38 @@ test("compiled NestJS + MySQL login, sponsor, registration, cookie/RBAC and sess
    assert.equal((await post("/api/auth/register",{...payload,consent:false,
      email:"invalid-consent@mlmforum.invalid"})).status,400);
   });
+  await t.test("member overview is identity-scoped and denies non-member roles",async()=>{
+   assert.equal((await request("/api/member/overview")).status,401);
+   assert.equal((await request("/api/member/overview?userId=anything")).status,401);
+   const memberLogin=await post("/api/auth/login",{email:testAccounts.member.email,password:testPassword});
+   assert.equal(memberLogin.status,200);
+   const memberCookies=cookiePairs(memberLogin);
+   const own=await request("/api/member/overview?userId=other",{
+    headers:{Cookie:memberCookies}
+   });
+   assert.equal(own.status,200);
+   const data=await own.json();
+   assert.equal(data.account.memberCode,testAccounts.member.memberCode);
+   assert.equal(data.account.name,testAccounts.member.name);
+   assert.equal(data.account.status,"ACTIVE");
+   assert.equal(data.account.emailVerified,true);
+   assert.equal(data.account.mobileVerified,true);
+   assert.ok(Array.isArray(data.recentSignIns));
+   assert.ok(data.recentSignIns.length>=1);
+   assert.ok(!JSON.stringify(data).includes(testAccounts.sponsor.mobile));
+   assert.ok(!JSON.stringify(data).includes("passwordHash"));
+   const sponsorLogin=await post("/api/auth/login",{email:testAccounts.sponsor.email,password:testPassword});
+   assert.equal(sponsorLogin.status,200);
+   assert.equal((await request("/api/member/overview",{
+    headers:{Cookie:cookiePairs(sponsorLogin)}
+   })).status,403);
+   const blocked=await post("/api/auth/login",{email:testAccounts.blocked.email,password:testPassword});
+   assert.equal(blocked.status,401);
+   assert.equal((await post("/api/auth/logout",{},memberCookies)).status,204);
+   assert.equal((await request("/api/member/overview",{
+    headers:{Cookie:memberCookies}
+   })).status,401);
+  });
   await t.test("unauthorized and suspended login fails",async()=>{
    assert.equal((await post("/api/auth/login",{email:testAccounts.member.email,password:"wrong"})).status,401);
    assert.equal((await post("/api/auth/login",{email:testAccounts.blocked.email,password:testPassword})).status,401);

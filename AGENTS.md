@@ -12,3 +12,5 @@
 - User has **no local clone yet**. First handoff after CI green: `git clone --branch dev/local-foundation --single-branch https://github.com/canzone-tech/mlmforum.git`; `cd mlmforum`; `npm run verify`. After first clone: `git pull` then `npm run verify`.
 - No production deployment or real provider integration without explicit authorization, full backup/isolated restore, release evidence, rollback, safe compiled source-free artifact and external UAT.
 - Report commit SHA, changed files, real CI status, local status, pending approvals and deployment status. No unsupported PASS.
+
+- Current operator decision: **defer all local clone/install/Docker/verification** while another project runs locally. Keep working only in GitHub and verify through GitHub Actions until user explicitly requests local testing. Do not ask user to run local commands merely because three CI gates pass.
