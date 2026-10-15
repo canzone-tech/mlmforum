@@ -121,7 +121,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
  .dash-layout{display:block}
  .sidebar{display:none;position:fixed;z-index:22;top:60px;bottom:0;left:0;width:260px;max-width:86vw;overflow:auto;box-shadow:10px 0 30px #1113}
  .sidebar.open{display:block}
- .menu-backdrop{display:block;position:fixed;z-index:21;inset:60px 0 0;background:#071b4955;border:0;width:100%}
+ .menu-backdrop{display:block;position:fixed;z-index:21;inset:60px 0 0;left:min(260px,86vw);width:auto;background:#071b4955;border:0}
  .dashboard-menu-toggle{display:inline-flex}
  .dash-main{padding:15px 12px}
  .dash-title-row{display:block}
