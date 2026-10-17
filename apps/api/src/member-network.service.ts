@@ -90,7 +90,7 @@ export class MemberNetworkService {
    joinedTo:saved.joinedTo?.toISOString().slice(0,10)??"",
    searchTerm:saved.searchTerm,
    savedAt:saved.updatedAt.toISOString()
-  }:null;
+  }:{joinedFrom:"",joinedTo:"",searchTerm:"",savedAt:null};
  }
 
  async saveDraft(memberId:string,payload:unknown){

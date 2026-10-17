@@ -33,12 +33,12 @@ export function MemberNetworkView(){
      credentials:"same-origin",cache:"no-store",signal:controller.signal
     });
     if(!saved.ok)throw new Error("Could not load saved filters");
-    const data:Draft|null=await saved.json();
-    const filters:Filters=data?{
+    const data:Draft=await saved.json();
+    const filters:Filters={
      joinedFrom:data.joinedFrom??"",
      joinedTo:data.joinedTo??"",
      searchTerm:data.searchTerm??""
-    }:empty;
+    };
     const response=await fetch("/api/member/network?"+query(filters,1),{
      credentials:"same-origin",cache:"no-store",signal:controller.signal
     });
@@ -104,7 +104,7 @@ export function MemberNetworkView(){
     <form className="network-form" onSubmit={apply}>
      <div className="network-field-grid">
       <label>Member status *
-       <select required value="ACTIVE" aria-label="Member status" onChange={()=>undefined}>
+       <select disabled defaultValue="ACTIVE" aria-label="Member status">
         <option value="ACTIVE">Active (verified)</option>
         <option disabled value="PENDING">Pending verification — awaiting approval</option>
         <option disabled value="INACTIVE">Inactive — awaiting approval</option>

@@ -244,7 +244,9 @@ test("compiled NestJS + MySQL login, sponsor, registration, cookie/RBAC and sess
     request(url,{method:"PUT",headers:{
      Cookie:who,"Content-Type":"application/json",Origin:origin
     },body:JSON.stringify(body)});
-   assert.equal(await (await get(cookie)).json(),null);
+   assert.deepEqual(await (await get(cookie)).json(),{
+    joinedFrom:"",joinedTo:"",searchTerm:"",savedAt:null
+   });
    const body={joinedFrom:"2026-10-01",joinedTo:"2026-10-17",searchTerm:"Alpha"};
    const first=await put(cookie,body);
    assert.equal(first.status,200);
@@ -270,7 +272,9 @@ test("compiled NestJS + MySQL login, sponsor, registration, cookie/RBAC and sess
     email:testAccounts.childA.email,password:testPassword
    });
    assert.equal(other.status,200);
-   assert.equal(await (await get(cookiePairs(other))).json(),null);
+   assert.deepEqual(await (await get(cookiePairs(other))).json(),{
+    joinedFrom:"",joinedTo:"",searchTerm:"",savedAt:null
+   });
    const nonMember=await post("/api/auth/login",{
     email:testAccounts.sponsor.email,password:testPassword
    });
