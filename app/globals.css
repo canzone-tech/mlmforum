@@ -174,3 +174,22 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
  .level-member{padding:11px 9px;min-height:110px}
  .level-root{width:100%;max-width:260px}
 }
+
+/* My Network uses the existing role-workspace panel, field and table tokens. */
+.network-columns{align-items:stretch}
+.network-helper{font-size:11px;line-height:1.5;color:var(--muted);margin:0 0 12px}
+.network-field-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px}
+.network-field-grid label{display:flex;flex-direction:column;gap:6px;font-size:11px;font-weight:700;color:var(--navy)}
+.network-field-grid input,.network-field-grid select{width:100%;min-width:0;border:1px solid var(--line);padding:10px;border-radius:8px;background:#fff;color:var(--ink)}
+.network-field-grid select:disabled{color:var(--muted);background:#f5f6fa;cursor:not-allowed}
+.network-field-grid small{font-size:10px;color:var(--muted);font-weight:400;line-height:1.35}
+.network-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.network-error{color:#a52858;font-size:11px}
+.network-success{color:var(--green);font-size:11px}
+.network-member-code{display:block;margin-top:4px;color:var(--muted);font-size:10px}
+.network-pagination{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:12px 0}
+.network-pagination span{font-size:11px;color:var(--muted)}
+.network-pagination button{padding:7px 10px}
+.network-restriction-title{margin-top:20px!important}
+@media(max-width:850px){.network-columns{grid-template-columns:1fr}}
+@media(max-width:620px){.network-field-grid{grid-template-columns:1fr}}

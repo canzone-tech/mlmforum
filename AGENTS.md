@@ -16,3 +16,7 @@
 - Current operator decision: **defer all local clone/install/Docker/verification** while another project runs locally. Keep working only in GitHub and verify through GitHub Actions until user explicitly requests local testing. Do not ask user to run local commands merely because three CI gates pass.
 
 - Genealogy business safety: pending registration requests must never become confirmed downline links automatically. Read-only relationships are not eligibility/rank/payout calculations; sponsor changes and qualification policies require prior approval.
+
+- My Network: only confirmed direct sponsor links from MySQL; never infer pending
+  registrations or follow-up statuses. Draft filters are member-owned and
+  cannot be written for another user. Follow-up/contact policies need approval.

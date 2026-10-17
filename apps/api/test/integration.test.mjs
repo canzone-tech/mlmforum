@@ -162,6 +162,129 @@ test("compiled NestJS + MySQL login, sponsor, registration, cookie/RBAC and sess
     headers:{Cookie:memberCookies}
    })).status,401);
   });
+  await t.test("My Network only lists verified direct referrals owned by logged-in MEMBER",async()=>{
+   assert.equal((await request("/api/member/network")).status,401);
+   assert.equal((await request("/api/member/network/filters")).status,401);
+   const login=await post("/api/auth/login",{
+    email:testAccounts.member.email,password:testPassword
+   });
+   assert.equal(login.status,200);
+   const cookie=cookiePairs(login);
+   const data=await (await request("/api/member/network?memberId=arbitrary&role=admin",{
+    headers:{Cookie:cookie}
+   })).json();
+   assert.equal(data.total,2);
+   assert.deepEqual(data.members.map(x=>x.memberCode),
+    [testAccounts.childA.memberCode,testAccounts.childB.memberCode]);
+   assert.ok(data.members.every(x=>x.memberStatus==="ACTIVE"));
+   assert.ok(!JSON.stringify(data).includes(testAccounts.grandchild.memberCode));
+   assert.ok(!JSON.stringify(data).includes(testAccounts.sponsor.memberCode));
+   assert.ok(!JSON.stringify(data).includes("mobile"));
+   assert.ok(!JSON.stringify(data).includes("passwordHash"));
+   assert.ok(!JSON.stringify(data).includes("followUpStatus"));
+   const search=await (await request("/api/member/network?searchTerm=BETA",{
+    headers:{Cookie:cookie}
+   })).json();
+   assert.equal(search.total,1);
+   assert.equal(search.members[0].memberCode,testAccounts.childB.memberCode);
+   const noMatch=await (await request("/api/member/network?searchTerm=UNRELATED",{
+    headers:{Cookie:cookie}
+   })).json();
+   assert.equal(noMatch.total,0);
+   const future=await (await request("/api/member/network?joinedFrom=2099-01-01",{
+    headers:{Cookie:cookie}
+   })).json();
+   assert.equal(future.total,0);
+   const page2=await (await request("/api/member/network?page=2",{
+    headers:{Cookie:cookie}
+   })).json();
+   assert.equal(page2.total,2);
+   assert.equal(page2.members.length,0);
+   assert.equal(page2.hasMore,false);
+   for(const invalid of [
+    "joinedFrom=2026-02-30",
+    "joinedFrom=2026-10-20&joinedTo=2026-10-19",
+    "searchTerm="+encodeURIComponent("X".repeat(101)),
+    "page=0","page=not-a-number"
+   ]){
+    assert.equal((await request("/api/member/network?"+invalid,{
+     headers:{Cookie:cookie}
+    })).status,400,invalid);
+   }
+   const outsider=await post("/api/auth/login",{
+    email:testAccounts.sponsor.email,password:testPassword
+   });
+   assert.equal(outsider.status,200);
+   const outsiderCookie=cookiePairs(outsider);
+   assert.equal((await request("/api/member/network",{
+    headers:{Cookie:outsiderCookie}
+   })).status,403);
+   const childLogin=await post("/api/auth/login",{
+    email:testAccounts.childA.email,password:testPassword
+   });
+   assert.equal(childLogin.status,200);
+   const childNetwork=await (await request("/api/member/network?memberId="+
+    encodeURIComponent(testAccounts.member.memberCode),{
+    headers:{Cookie:cookiePairs(childLogin)}
+   })).json();
+   assert.deepEqual(childNetwork.members.map(x=>x.memberCode),
+    [testAccounts.grandchild.memberCode]);
+   assert.equal((await post("/api/auth/logout",{},cookie)).status,204);
+   assert.equal((await request("/api/member/network",{headers:{Cookie:cookie}})).status,401);
+  });
+  await t.test("saved My Network filter draft belongs to member, validates input, and upserts",async()=>{
+   const login=await post("/api/auth/login",{
+    email:testAccounts.member.email,password:testPassword
+   });
+   assert.equal(login.status,200);
+   const cookie=cookiePairs(login);
+   const url="/api/member/network/filters";
+   const get=(who)=>request(url,{headers:{Cookie:who}});
+   const put=(who,body,origin=process.env.APP_ORIGIN)=>
+    request(url,{method:"PUT",headers:{
+     Cookie:who,"Content-Type":"application/json",Origin:origin
+    },body:JSON.stringify(body)});
+   assert.equal(await (await get(cookie)).json(),null);
+   const body={joinedFrom:"2026-10-01",joinedTo:"2026-10-17",searchTerm:"Alpha"};
+   const first=await put(cookie,body);
+   assert.equal(first.status,200);
+   assert.ok((await first.json()).savedAt);
+   assert.equal((await put(cookie,body)).status,200);
+   const stored=await (await get(cookie)).json();
+   assert.equal(stored.joinedFrom,body.joinedFrom);
+   assert.equal(stored.joinedTo,body.joinedTo);
+   assert.equal(stored.searchTerm,body.searchTerm);
+   const member=await db.user.findUniqueOrThrow({
+    where:{email:testAccounts.member.email},select:{id:true}
+   });
+   assert.equal(await db.memberNetworkFilterDraft.count({where:{memberId:member.id}}),1);
+   const badDate=await put(cookie,{...body,joinedFrom:"2026-02-30"});
+   assert.equal(badDate.status,400);
+   assert.equal((await put(cookie,{...body,memberId:"someone-else"})).status,400);
+   assert.equal((await put(cookie,body,"https://bad.example")).status,403);
+   assert.equal((await request(url,{method:"PUT",headers:{
+    Cookie:cookie,Origin:process.env.APP_ORIGIN,
+    "Content-Type":"text/plain"
+   },body:"not JSON"})).status,403);
+   const other=await post("/api/auth/login",{
+    email:testAccounts.childA.email,password:testPassword
+   });
+   assert.equal(other.status,200);
+   assert.equal(await (await get(cookiePairs(other))).json(),null);
+   const nonMember=await post("/api/auth/login",{
+    email:testAccounts.sponsor.email,password:testPassword
+   });
+   assert.equal(nonMember.status,200);
+   assert.equal((await get(cookiePairs(nonMember))).status,403);
+   assert.equal((await put(cookiePairs(nonMember),body)).status,403);
+   assert.equal((await put("",body)).status,401);
+   const fresh={joinedFrom:"",joinedTo:"",searchTerm:"Beta"};
+   assert.equal((await put(cookie,fresh)).status,200);
+   assert.equal((await (await get(cookie)).json()).searchTerm,"Beta");
+   assert.equal(await db.memberNetworkFilterDraft.count({where:{memberId:member.id}}),1);
+   assert.equal((await post("/api/auth/logout",{},cookie)).status,204);
+   assert.equal((await get(cookie)).status,401);
+  });
   await t.test("unauthorized and suspended login fails",async()=>{
    assert.equal((await post("/api/auth/login",{email:testAccounts.member.email,password:"wrong"})).status,401);
    assert.equal((await post("/api/auth/login",{email:testAccounts.blocked.email,password:testPassword})).status,401);

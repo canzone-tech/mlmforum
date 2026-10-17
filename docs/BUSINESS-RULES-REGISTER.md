@@ -20,3 +20,18 @@ Do not mistake an integration fixture or UI label for an approved production ide
 Confirmed baseline: non-binary 1:10, direct sponsor relationships, level-wise display. Production **active/eligible** policy, whether to enforce a ten-direct limit, sponsor-change approval, and rank qualification are still **UNAPPROVED** for operational updates.
 
 `MemberSponsorLink` is an authoritative confirmed-link read model; pending registration requests do not populate it. No public placement/change endpoint, rank evaluation or compensation calculation is implemented. Only authenticated MEMBER accounts may read their own structural network. Visible descendants are restricted to currently ACTIVE and mobile-verified user records as a conservative privacy/display gate, **not** as final business eligibility. View depth and per-level display cap are configuration-driven. Counts refer only to displayed nodes, never total eligible network population.
+
+## My Network — 17 Oct 2026
+Client `app.js` `my-network` page specifies member status, Joined from/to,
+follow-up status, member ID/name, Save Draft and Apply Filters. The existing
+confirmed SponsorLink is the sole source of real personally referred members.
+
+Implemented: ACTIVE/mobile-verified direct link read-only member list,
+date/name/member-ID server filters, member-owned saved filter preferences and
+pagination. Pending application rows are not shown, even if they include a Sponsor ID.
+
+Not enabled: display/filter of unverified or suspended member identity, follow-up
+status classification, contact requests, scheduled follow-up actions and sponsor
+placement changes. The client prototype lists those status options but provides
+**no approved workflow, permission/consent or status ownership rules**. Do not
+invent statuses to satisfy the screenshot; obtain approval before new work.

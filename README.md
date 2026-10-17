@@ -48,3 +48,15 @@ The screenshot-defined member sidebar, four-summary-card layout, recent-activity
 No pending applications are attached as live downline. This view does **not** enforce sponsor placement or rank qualification, calculate commissions, perform payments, or expose private contact details. ACTIVE/mobile-verified visibility is a conservative display gate rather than a final eligibility definition. Depth/cap are configured via `GENEALOGY_VIEW_MAX_LEVEL` and `GENEALOGY_VIEW_MAX_NODES_PER_LEVEL`. The UI identifies partial results whenever a view cap is reached.
 
 Local clone, installation, Docker and verification remain deferred at owner request. GitHub Actions provides the current test evidence.
+
+## Member My Network
+`/dashboard/my-network`: screenshot-aligned, protected two-column page using
+`GET /api/member/network` and `GET/PUT /api/member/network/filters`.
+MySQL MemberSponsorLink supplies only the logged-in member's **confirmed direct**
+active/verified referrals. Date and member-ID/name filters use bounded validated
+queries; account-owned filter drafts persist in MySQL. Results include only names,
+member codes, join dates and current permitted status; no private contacts or
+financial information. Client-defined follow-up categories and inactive/pending
+member visibility remain disabled pending policy/consent approval. CI and local
+`npm run verify` exercise the same MySQL/API/browser flows.
+Local cloning, installs and testing remain deferred at the owner's request.

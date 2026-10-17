@@ -65,6 +65,7 @@ export async function cleanFixture(){
   where:{email:{in:Object.values(seed).map(x=>x.email)}},select:{id:true}
  })).map(x=>x.id);
  if(ids.length){
+  await db.memberNetworkFilterDraft.deleteMany({where:{memberId:{in:ids}}});
   await db.memberSponsorLink.deleteMany({where:{OR:[{memberId:{in:ids}},{sponsorId:{in:ids}}]}});
   await db.session.deleteMany({where:{userId:{in:ids}}});
   await db.userRole.deleteMany({where:{userId:{in:ids}}});

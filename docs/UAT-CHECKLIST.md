@@ -43,3 +43,16 @@
 - [ ] Empty network and cap notices never imply eligible-rank or exhaustive counts
 - [ ] Client screenshot side-by-side visual UAT remains pending
 - [ ] Real sponsor placement/change policy and admin workflows require business signoff before any write endpoint
+
+## Member My Network (current module)
+- [ ] Client screenshot layout: controls left, relevant real records right, mobile stacked cards
+- [ ] Read only `MemberSponsorLink` confirmed direct referrals, not level-2 descendants or pending signup requests
+- [ ] Shared verified/ACTIVE visibility gate identical to Genealogy; unapproved statuses/follow-up tracking not fabricated
+- [ ] Joined-from/to inclusive UTC dates; strict invalid calendar and reverse range rejection
+- [ ] Member ID/name text search scoped to authenticated sponsor; stable pagination and truthful total
+- [ ] Member-owned filter draft saved, restored and idempotently updated in MySQL
+- [ ] Guest and revoked sessions 401, non-MEMBER role 403; query-string role/userId cannot override owner
+- [ ] PUT draft blocks cross-origin/invalid JSON and cannot save another member's identity
+- [ ] No private phone/email/password, real-money data or nonconsented follow-up contact details returned
+- [ ] Real API and desktop/mobile Chromium filter/save/reload/empty/permission tests pass
+- [ ] Exact screenshot visual signoff remains pending; no local tests until owner permits

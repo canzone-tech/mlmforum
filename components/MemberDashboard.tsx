@@ -4,6 +4,7 @@ import Link from "next/link";
 import {Brand} from "./Brand";
 import {memberNavigation} from "../config/member-navigation";
 import {GenealogyView} from "./GenealogyView";
+import {MemberNetworkView} from "./MemberNetworkView";
 
 type Identity={id:string;name:string;roles:string[]};
 type MemberOverview={
@@ -13,7 +14,7 @@ type MemberOverview={
 };
 type View="loading"|"unauthorized"|"unavailable"|"ready";
 
-export function MemberDashboard({section}:{section:"overview"|"genealogy"}){
+export function MemberDashboard({section}:{section:"overview"|"genealogy"|"my-network"}){
  const [identity,setIdentity]=useState<Identity|null>(null);
  const [overview,setOverview]=useState<MemberOverview|null>(null);
  const [view,setView]=useState<View>("loading");
@@ -108,8 +109,8 @@ export function MemberDashboard({section}:{section:"overview"|"genealogy"}){
    <aside className={menuOpen?"sidebar open":"sidebar"} id="member-sidebar" aria-label="Member workspace navigation">
     <div className="sidebar-label">WORKSPACE</div>
     <nav aria-label="Member modules">
-     {memberNavigation.map(item=>item.id==="overview"||item.id==="genealogy"?
-      <Link key={item.id} href={item.id==="overview"?"/dashboard":"/dashboard/genealogy"}
+     {memberNavigation.map(item=>"href" in item?
+      <Link key={item.id} href={item.href}
        aria-current={section===item.id?"page":undefined} className={section===item.id?"active":""}
        onClick={()=>setMenuOpen(false)}>{item.label}<span aria-hidden="true">›</span></Link>:
       <span key={item.id} className="sidebar-disabled" aria-disabled="true"
@@ -166,7 +167,7 @@ export function MemberDashboard({section}:{section:"overview"|"genealogy"}){
      </dl>
     </section>
     <footer className="dash-footer">MLM Community Forum • Member workspace • No financial operations</footer>
-</>:<GenealogyView/>}
+</>:section==="genealogy"?<GenealogyView/>:<MemberNetworkView/>}
    </main>
   </div>
  </div>;

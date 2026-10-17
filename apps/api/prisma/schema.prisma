@@ -41,6 +41,7 @@ model User {
   sponsored       RegistrationRequest[] @relation("SponsorRequests")
   sponsorLinks    MemberSponsorLink[] @relation("SponsorForMember")
   sponsorOf       MemberSponsorLink? @relation("MemberSponsoredBy")
+  networkFilterDraft MemberNetworkFilterDraft?
 }
 model UserRole {
   id        String   @id @default(uuid()) @db.Char(36)
@@ -84,4 +85,15 @@ model MemberSponsorLink {
   member    User     @relation("MemberSponsoredBy", fields: [memberId], references: [id], onDelete: Restrict)
   sponsor   User     @relation("SponsorForMember", fields: [sponsorId], references: [id], onDelete: Restrict)
   @@index([sponsorId, memberId])
+}
+
+// Stores only the signed-in member's own network-filter choices.
+// No follow-up notes, contact data, placement, or business-status changes.
+model MemberNetworkFilterDraft {
+  memberId  String    @id @db.Char(36)
+  joinedFrom DateTime? @db.DateTime(3)
+  joinedTo   DateTime? @db.DateTime(3)
+  searchTerm String    @default("") @db.VarChar(100)
+  updatedAt  DateTime  @updatedAt @db.DateTime(3)
+  member    User      @relation(fields: [memberId], references: [id], onDelete: Restrict)
 }

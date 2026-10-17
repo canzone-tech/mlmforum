@@ -1,5 +1,5 @@
 import {Injectable} from "@nestjs/common";
-import {UserStatus} from "@prisma/client";
+import {visibleConfirmedMember} from "./member-visibility";
 import {Database} from "./db.service";
 import {config} from "./config";
 
@@ -46,7 +46,7 @@ export class GenealogyService {
    const links=await this.db.memberSponsorLink.findMany({
     where:{
      sponsorId:{in:parents},
-     member:{status:UserStatus.ACTIVE,mobileVerifiedAt:{not:null}}
+     member:visibleConfirmedMember
     },
     orderBy:[{linkedAt:"asc"},{memberId:"asc"}],
     take:config.GENEALOGY_VIEW_MAX_NODES_PER_LEVEL+1,

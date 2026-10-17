@@ -1,10 +1,10 @@
 // Single source for the Member menu names/order from client app.js roleMenus.member.
-// Only Overview is implemented; other entries stay visibly inactive until
-// their own frontend+backend modules are developed and verified.
+// Only routes backed by a verified frontend+backend module have an href.
+// Other entries remain visibly disabled.
 export const memberNavigation = [
- {label:"Overview",id:"overview"},
- {label:"Genealogy Tree",id:"genealogy"},
- {label:"My Network",id:"my-network"},
+ {label:"Overview",id:"overview",href:"/dashboard"},
+ {label:"Genealogy Tree",id:"genealogy",href:"/dashboard/genealogy"},
+ {label:"My Network",id:"my-network",href:"/dashboard/my-network"},
  {label:"Income Ledger",id:"income-ledger"},
  {label:"Wallet & Payouts",id:"wallet"},
  {label:"My Profile",id:"profile"},
