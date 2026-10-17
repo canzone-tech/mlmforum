@@ -161,6 +161,10 @@ test("My Network lists only direct verified referrals, filters, and saves prefer
  await page.getByRole("searchbox",{name:"Member ID / name"}).fill("");
  await page.getByRole("button",{name:"Apply Filters"}).click();
  await expect(page.getByText("2 matching confirmed direct members")).toBeVisible();
+ // The real saved draft persists across sessions. Restore a clean draft before
+ // other browser tests reuse this isolated account.
+ await page.getByRole("button",{name:"Save Draft"}).click();
+ await expect(page.getByText("Your filter draft was saved to your account.")).toBeVisible();
  await page.getByRole("button",{name:"Logout"}).click();
  await expect(page).toHaveURL(/\/login$/);
 });
